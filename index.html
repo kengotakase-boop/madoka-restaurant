@@ -1,1 +1,219 @@
-
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>madoka Restaurant</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #fff; -webkit-font-smoothing: antialiased; }
+input, select, textarea, button { font-family: inherit; }
+::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body>
+<div id="root"><p style="padding:20px;font-family:sans-serif">読み込み中...</p></div>
+<script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7.23.2/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+async function generateRecipeAI(dishName) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 30000);
+  try {
+    const res = await fetch("/api/recipe", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      signal: controller.signal, body: JSON.stringify({ dishName }),
+    });
+    clearTimeout(timer);
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    return await res.json();
+  } catch(e) { clearTimeout(timer); throw e; }
+}
+function guessRecipe(name) {
+  return { ingredients: [name + " 適量", "塩 少々", "油 大さじ1"], steps: ["材料を準備する", "加熱して味を整える", "盛り付けて完成"] };
+}
+const STORAGE_KEY = "madoka_restaurant_v2";
+function loadData() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch { return {}; } }
+function saveData(data) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch {} }
+const COLORS = { primary:"#E8735A", bg:"#FFF9F7", card:"#FFFFFF", text:"#2D2D2D", sub:"#888", border:"#F0E8E4", tag:"#FFF0EC", tagText:"#E8735A", star:"#FFB830" };
+function Stars({ score, onChange }) {
+  return React.createElement("div", {style:{display:"flex",gap:4}},
+    [1,2,3,4,5].map(i => React.createElement("span", {
+      key:i, onClick:()=>onChange&&onChange(i),
+      style:{fontSize:24,cursor:onChange?"pointer":"default",color:i<=score?COLORS.star:"#DDD",lineHeight:1}
+    }, "★"))
+  );
+}
+function MadokaRestaurant() {
+  const stored = loadData();
+  const [dishes, setDishes] = useState(stored.dishes || []);
+  const [view, setView] = useState("home");
+  const [selected, setSelected] = useState(null);
+  const [searchQ, setSearchQ] = useState("");
+  const [filterTag, setFilterTag] = useState("");
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState("和食");
+  const [tags, setTags] = useState("");
+  const [ingredients, setIngredients] = useState("");
+  const [steps, setSteps] = useState("");
+  const [note, setNote] = useState("");
+  const [photo, setPhoto] = useState(null);
+  const [generating, setGenerating] = useState(false);
+  const fileRef = useRef();
+  useEffect(() => { saveData({ dishes }); }, [dishes]);
+  const allTags = [...new Set(dishes.flatMap(d => d.tags || []))];
+  const filtered = dishes.filter(d => {
+    const q = searchQ.toLowerCase();
+    const mQ = !q || d.name.toLowerCase().includes(q) || (d.tags||[]).some(t=>t.toLowerCase().includes(q));
+    const mT = !filterTag || (d.tags||[]).includes(filterTag);
+    return mQ && mT;
+  });
+  const openAdd = () => { setName(""); setCategory("和食"); setTags(""); setIngredients(""); setSteps(""); setNote(""); setPhoto(null); setView("add"); };
+  const openEdit = (dish) => { setName(dish.name); setCategory(dish.category||"和食"); setTags((dish.tags||[]).join(", ")); setIngredients((dish.ingredients||[]).join("\n")); setSteps((dish.steps||[]).join("\n")); setNote(dish.note||""); setPhoto(dish.photo||null); setSelected(dish); setView("edit"); };
+  const handleSave = () => {
+    if (!name.trim()) { alert("料理名を入力してください"); return; }
+    const dish = { id:Date.now(), name:name.trim(), category, tags:tags.split(/[,、]/).map(t=>t.trim()).filter(Boolean), ingredients:ingredients.split("\n").map(s=>s.trim()).filter(Boolean), steps:steps.split("\n").map(s=>s.trim()).filter(Boolean), note:note.trim(), photo, score:0, createdAt:new Date().toISOString() };
+    setDishes(prev => [dish, ...prev]); setView("home");
+  };
+  const handleUpdate = () => {
+    if (!name.trim()) { alert("料理名を入力してください"); return; }
+    setDishes(prev => prev.map(d => d.id===selected.id ? {...d, name:name.trim(), category, photo, tags:tags.split(/[,、]/).map(t=>t.trim()).filter(Boolean), ingredients:ingredients.split("\n").map(s=>s.trim()).filter(Boolean), steps:steps.split("\n").map(s=>s.trim()).filter(Boolean), note:note.trim()} : d));
+    setView("home");
+  };
+  const handleDelete = (id) => { if (!confirm("削除しますか？")) return; setDishes(prev => prev.filter(d => d.id!==id)); setView("home"); };
+  const handleScore = (id, score) => { setDishes(prev => prev.map(d => d.id===id ? {...d, score} : d)); };
+  const handlePhoto = (e) => { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = ev => setPhoto(ev.target.result); reader.readAsDataURL(file); };
+  const handleAI = async () => {
+    if (!name.trim()) { alert("先に料理名を入力してください"); return; }
+    setGenerating(true);
+    try { const r = await generateRecipeAI(name); if(r.ingredients) setIngredients(r.ingredients.join("\n")); if(r.steps) setSteps(r.steps.join("\n")); }
+    catch(e) { const r = guessRecipe(name); setIngredients(r.ingredients.join("\n")); setSteps(r.steps.join("\n")); }
+    finally { setGenerating(false); }
+  };
+  const S = (c="#fff",b=COLORS.primary,x={}) => ({padding:"10px 20px",borderRadius:24,border:"none",background:b,color:c,fontWeight:700,fontSize:14,cursor:"pointer",...x});
+  const Card = (x={}) => ({background:COLORS.card,borderRadius:12,padding:"12px 14px",marginBottom:10,border:"1px solid "+COLORS.border,...x});
+  if (view==="home") return (
+    React.createElement("div", {style:{maxWidth:430,margin:"0 auto",background:COLORS.bg,minHeight:"100vh"}},
+      React.createElement("div", {style:{background:COLORS.primary,padding:"20px 16px 16px",color:"#fff"}},
+        React.createElement("div", {style:{fontSize:22,fontWeight:900}}, "🍽 madoka Restaurant"),
+        React.createElement("div", {style:{fontSize:12,opacity:0.8,marginTop:2}}, "家族のレシピ帳"),
+        React.createElement("input", {value:searchQ, onChange:e=>setSearchQ(e.target.value), placeholder:"料理名・タグで検索...", style:{width:"100%",marginTop:12,padding:"8px 14px",borderRadius:20,border:"none",fontSize:14,outline:"none",background:"rgba(255,255,255,0.9)"}})
+      ),
+      allTags.length>0 && React.createElement("div", {style:{display:"flex",gap:6,padding:"10px 16px",overflowX:"auto"}},
+        React.createElement("span", {onClick:()=>setFilterTag(""), style:{padding:"4px 12px",borderRadius:12,fontSize:12,cursor:"pointer",whiteSpace:"nowrap",background:!filterTag?COLORS.primary:COLORS.tag,color:!filterTag?"#fff":COLORS.tagText,fontWeight:600}}, "すべて"),
+        ...allTags.map(t => React.createElement("span", {key:t, onClick:()=>setFilterTag(t===filterTag?"":t), style:{padding:"4px 12px",borderRadius:12,fontSize:12,cursor:"pointer",whiteSpace:"nowrap",background:t===filterTag?COLORS.primary:COLORS.tag,color:t===filterTag?"#fff":COLORS.tagText,fontWeight:600}}, t))
+      ),
+      React.createElement("div", {style:{padding:"4px 16px 0",fontSize:12,color:COLORS.sub}}, filtered.length+"件のレシピ"),
+      React.createElement("div", {style:{padding:"8px 16px 80px"}},
+        filtered.length===0 && React.createElement("div", {style:{textAlign:"center",padding:"60px 0",color:COLORS.sub}},
+          React.createElement("div", {style:{fontSize:48}}, "🍳"),
+          React.createElement("div", {style:{marginTop:12,fontSize:14}}, "レシピを追加しましょう")
+        ),
+        ...filtered.map(dish => React.createElement("div", {key:dish.id, onClick:()=>{setSelected(dish);setView("detail");}, style:{background:COLORS.card,borderRadius:16,marginBottom:10,overflow:"hidden",boxShadow:"0 2px 8px rgba(0,0,0,0.06)",cursor:"pointer",display:"flex",alignItems:"stretch",border:"1px solid "+COLORS.border}},
+          dish.photo ? React.createElement("img", {src:dish.photo,style:{width:80,height:80,objectFit:"cover"},alt:""})
+                     : React.createElement("div", {style:{width:80,minHeight:80,background:COLORS.tag,display:"flex",alignItems:"center",justifyContent:"center",fontSize:32}}, "🍽"),
+          React.createElement("div", {style:{padding:"10px 12px",flex:1,minWidth:0}},
+            React.createElement("div", {style:{fontWeight:800,fontSize:15,color:COLORS.text,marginBottom:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}, dish.name),
+            React.createElement("div", {style:{fontSize:11,color:COLORS.sub,marginBottom:4}}, dish.category),
+            React.createElement(Stars, {score:dish.score||0}),
+            (dish.tags||[]).length>0 && React.createElement("div", {style:{display:"flex",gap:4,flexWrap:"wrap",marginTop:4}},
+              ...dish.tags.slice(0,3).map(t => React.createElement("span", {key:t,style:{fontSize:10,background:COLORS.tag,color:COLORS.tagText,padding:"2px 6px",borderRadius:8}}, t))
+            )
+          )
+        ))
+      ),
+      React.createElement("div", {style:{position:"fixed",bottom:24,right:24}},
+        React.createElement("button", {onClick:openAdd, style:{width:56,height:56,borderRadius:"50%",border:"none",background:COLORS.primary,color:"#fff",fontSize:28,cursor:"pointer",boxShadow:"0 4px 16px rgba(232,115,90,0.4)",display:"flex",alignItems:"center",justifyContent:"center"}}, "+")
+      )
+    )
+  );
+  if (view==="detail"&&selected) {
+    const dish=dishes.find(d=>d.id===selected.id)||selected;
+    return React.createElement("div", {style:{maxWidth:430,margin:"0 auto",background:COLORS.bg,minHeight:"100vh"}},
+      React.createElement("div", {style:{background:COLORS.primary,padding:"16px",display:"flex",alignItems:"center",gap:12}},
+        React.createElement("button", {onClick:()=>setView("home"),style:{...S("#fff","transparent"),padding:"4px 0",fontSize:18}}, "←"),
+        React.createElement("div", {style:{color:"#fff",fontWeight:800,fontSize:16,flex:1}}, dish.name),
+        React.createElement("button", {onClick:()=>openEdit(dish),style:{...S(COLORS.primary,"#fff"),padding:"6px 14px",fontSize:13}}, "編集")
+      ),
+      dish.photo && React.createElement("img", {src:dish.photo,style:{width:"100%",maxHeight:220,objectFit:"cover"},alt:""}),
+      React.createElement("div", {style:{padding:"16px"}},
+        React.createElement("div", {style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}},
+          React.createElement("span", {style:{fontSize:12,background:COLORS.tag,color:COLORS.tagText,padding:"3px 10px",borderRadius:10,fontWeight:600}}, dish.category),
+          React.createElement(Stars, {score:dish.score||0, onChange:s=>handleScore(dish.id,s)})
+        ),
+        (dish.tags||[]).length>0 && React.createElement("div", {style:{display:"flex",gap:6,flexWrap:"wrap",marginBottom:12}},
+          ...dish.tags.map(t => React.createElement("span", {key:t,style:{fontSize:11,background:COLORS.tag,color:COLORS.tagText,padding:"3px 8px",borderRadius:8}}, t))
+        ),
+        (dish.ingredients||[]).length>0 && React.createElement("div", {style:Card()},
+          React.createElement("div", {style:{fontWeight:700,fontSize:13,color:COLORS.primary,marginBottom:8}}, "🛒 材料"),
+          ...dish.ingredients.map((ing,i) => React.createElement("div", {key:i,style:{fontSize:14,color:COLORS.text,padding:"3px 0",borderBottom:i<dish.ingredients.length-1?"1px solid "+COLORS.border:""}}, ing))
+        ),
+        (dish.steps||[]).length>0 && React.createElement("div", {style:Card()},
+          React.createElement("div", {style:{fontWeight:700,fontSize:13,color:COLORS.primary,marginBottom:8}}, "📋 作り方"),
+          ...dish.steps.map((s,i) => React.createElement("div", {key:i,style:{display:"flex",gap:8,marginBottom:8}},
+            React.createElement("span", {style:{minWidth:22,height:22,borderRadius:"50%",background:COLORS.primary,color:"#fff",fontSize:11,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center"}}, i+1),
+            React.createElement("span", {style:{fontSize:14,color:COLORS.text,flex:1,paddingTop:2}}, s)
+          ))
+        ),
+        dish.note && React.createElement("div", {style:Card()},
+          React.createElement("div", {style:{fontWeight:700,fontSize:13,color:COLORS.primary,marginBottom:6}}, "📝 メモ"),
+          React.createElement("div", {style:{fontSize:14,color:COLORS.text,whiteSpace:"pre-wrap"}}, dish.note)
+        ),
+        React.createElement("button", {onClick:()=>handleDelete(dish.id),style:{...S("#fff","#FF5A5A",{width:"100%",marginTop:8})}}, "削除")
+      )
+    );
+  }
+  const isEdit = view==="edit";
+  return React.createElement("div", {style:{maxWidth:430,margin:"0 auto",background:COLORS.bg,minHeight:"100vh"}},
+    React.createElement("div", {style:{background:COLORS.primary,padding:"16px",display:"flex",alignItems:"center",gap:12}},
+      React.createElement("button", {onClick:()=>setView(isEdit?"detail":"home"),style:{...S("#fff","transparent"),padding:"4px 0",fontSize:18}}, "←"),
+      React.createElement("div", {style:{color:"#fff",fontWeight:800,fontSize:16}}, isEdit?"レシピ編集":"レシピ追加")
+    ),
+    React.createElement("div", {style:{padding:"16px",paddingBottom:80}},
+      React.createElement("div", {style:{marginBottom:14}},
+        React.createElement("div", {style:{fontSize:13,fontWeight:700,color:COLORS.text,marginBottom:6}}, "写真"),
+        photo ? React.createElement("div", {style:{position:"relative",display:"inline-block",width:"100%"}},
+          React.createElement("img", {src:photo,style:{width:"100%",maxHeight:180,objectFit:"cover",borderRadius:12},alt:""}),
+          React.createElement("button", {onClick:()=>setPhoto(null),style:{position:"absolute",top:8,right:8,padding:"2px 8px",borderRadius:12,border:"none",background:"rgba(0,0,0,0.5)",color:"#fff",cursor:"pointer"}}, "✕")
+        ) : React.createElement("button", {onClick:()=>fileRef.current.click(),style:{...S(COLORS.primary,COLORS.tag,{width:"100%",padding:14})}}, "📷 写真を追加"),
+        React.createElement("input", {type:"file",accept:"image/*",ref:fileRef,style:{display:"none"},onChange:handlePhoto})
+      ),
+      React.createElement("div", {style:{marginBottom:12}},
+        React.createElement("div", {style:{fontSize:13,fontWeight:700,color:COLORS.text,marginBottom:6}}, "料理名 *"),
+        React.createElement("input", {value:name,onChange:e=>setName(e.target.value),placeholder:"例：唐揚げ",style:{width:"100%",padding:"10px 14px",borderRadius:10,border:"1px solid "+COLORS.border,fontSize:15,outline:"none",background:COLORS.card}})
+      ),
+      React.createElement("button", {onClick:handleAI,disabled:generating,style:{...S("#fff",generating?"#CCC":COLORS.primary,{width:"100%",marginBottom:14})}}, generating?"⏳ 生成中...":"✨ AIでレシピを生成"),
+      React.createElement("div", {style:{marginBottom:12}},
+        React.createElement("div", {style:{fontSize:13,fontWeight:700,color:COLORS.text,marginBottom:6}}, "カテゴリー"),
+        React.createElement("select", {value:category,onChange:e=>setCategory(e.target.value),style:{width:"100%",padding:"10px 14px",borderRadius:10,border:"1px solid "+COLORS.border,fontSize:14,outline:"none",background:COLORS.card}},
+          ...["和食","洋食","中華","アジア料理","デザート","その他"].map(c => React.createElement("option", {key:c}, c))
+        )
+      ),
+      React.createElement("div", {style:{marginBottom:12}},
+        React.createElement("div", {style:{fontSize:13,fontWeight:700,color:COLORS.text,marginBottom:6}}, "タグ（カンマ区切り）"),
+        React.createElement("input", {value:tags,onChange:e=>setTags(e.target.value),placeholder:"例：簡単, 子ども向け",style:{width:"100%",padding:"10px 14px",borderRadius:10,border:"1px solid "+COLORS.border,fontSize:14,outline:"none",background:COLORS.card}})
+      ),
+      React.createElement("div", {style:{marginBottom:12}},
+        React.createElement("div", {style:{fontSize:13,fontWeight:700,color:COLORS.text,marginBottom:6}}, "材料（1行1つ）"),
+        React.createElement("textarea", {value:ingredients,onChange:e=>setIngredients(e.target.value),placeholder:"例：鶏もも肉 300g",rows:4,style:{width:"100%",padding:"10px 14px",borderRadius:10,border:"1px solid "+COLORS.border,fontSize:14,outline:"none",background:COLORS.card,resize:"vertical"}})
+      ),
+      React.createElement("div", {style:{marginBottom:12}},
+        React.createElement("div", {style:{fontSize:13,fontWeight:700,color:COLORS.text,marginBottom:6}}, "作り方（1行1ステップ）"),
+        React.createElement("textarea", {value:steps,onChange:e=>setSteps(e.target.value),placeholder:"例：鶏肉を切る",rows:5,style:{width:"100%",padding:"10px 14px",borderRadius:10,border:"1px solid "+COLORS.border,fontSize:14,outline:"none",background:COLORS.card,resize:"vertical"}})
+      ),
+      React.createElement("div", {style:{marginBottom:16}},
+        React.createElement("div", {style:{fontSize:13,fontWeight:700,color:COLORS.text,marginBottom:6}}, "メモ"),
+        React.createElement("textarea", {value:note,onChange:e=>setNote(e.target.value),placeholder:"コツ・ポイントなど",rows:3,style:{width:"100%",padding:"10px 14px",borderRadius:10,border:"1px solid "+COLORS.border,fontSize:14,outline:"none",background:COLORS.card,resize:"vertical"}})
+      ),
+      React.createElement("button", {onClick:isEdit?handleUpdate:handleSave,style:{...S("#fff",COLORS.primary,{width:"100%",fontSize:16,padding:"14px"})}}, isEdit?"更新する":"保存する")
+    )
+  );
+}
+const container = document.getElementById("root");
+const root = ReactDOM.createRoot(container);
+root.render(React.createElement(MadokaRestaurant));
+</script>
+</body>
+</html>
