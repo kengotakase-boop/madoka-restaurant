@@ -564,8 +564,9 @@ function closeDetail() {
 
 function editCurrent() {
   if (!currentDish) return;
+  var id = currentDish.id;
   closeDetail();
-  openForm(currentDish.id);
+  openForm(id);
 }
 
 // ===== Share =====
