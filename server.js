@@ -1,10 +1,42 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(express.static(__dirname));
+
+const DATA_DIR = '/data';
+const HERO_PATH = path.join(DATA_DIR, 'hero.txt');
+
+if (!fs.existsSync(DATA_DIR)) {
+  try { fs.mkdirSync(DATA_DIR, { recursive: true }); } catch(e) {}
+}
+
+app.get('/api/hero', (req, res) => {
+  try {
+    if (fs.existsSync(HERO_PATH)) {
+      const image = fs.readFileSync(HERO_PATH, 'utf8');
+      res.json({ image });
+    } else {
+      res.json({ image: null });
+    }
+  } catch(e) {
+    res.json({ image: null });
+  }
+});
+
+app.post('/api/hero', (req, res) => {
+  const { image } = req.body;
+  if (!image) return res.status(400).json({ error: 'No image data' });
+  try {
+    fs.writeFileSync(HERO_PATH, image, 'utf8');
+    res.json({ ok: true });
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 
 app.post('/api/recipe', async (req, res) => {
   const { dishName } = req.body;
@@ -22,7 +54,7 @@ app.post('/api/recipe', async (req, res) => {
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 800,
         system: '料理レシピの専門家です。必ずJSON形式のみで回答。{"ingredients":["材料1 分量"],"steps":["手順1"]}',
-        messages: [{ role: 'user', content: dishName + 'の家庭料理レシピ（4人分）をJSONで。' }],
+        messages: [{ role: 'user', content: dishName + 'の家庭料理レシピ（2人前）をJSONで。' }],
       }),
     });
     const data = await response.json();
