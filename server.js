@@ -4,27 +4,42 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '50mb' }));
 app.use(express.static(__dirname));
 
 const DATA_DIR = '/data';
 const HERO_PATH = path.join(DATA_DIR, 'hero.txt');
+const DISHES_PATH = path.join(DATA_DIR, 'dishes.json');
 
 if (!fs.existsSync(DATA_DIR)) {
   try { fs.mkdirSync(DATA_DIR, { recursive: true }); } catch(e) {}
 }
+
+app.get('/api/dishes', (req, res) => {
+  try {
+    if (fs.existsSync(DISHES_PATH)) {
+      const data = fs.readFileSync(DISHES_PATH, 'utf8');
+      res.json(JSON.parse(data));
+    } else { res.json([]); }
+  } catch(e) { res.json([]); }
+});
+
+app.post('/api/dishes', (req, res) => {
+  try {
+    const dishes = req.body;
+    if (!Array.isArray(dishes)) return res.status(400).json({ error: 'Invalid data' });
+    fs.writeFileSync(DISHES_PATH, JSON.stringify(dishes), 'utf8');
+    res.json({ ok: true });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
 
 app.get('/api/hero', (req, res) => {
   try {
     if (fs.existsSync(HERO_PATH)) {
       const image = fs.readFileSync(HERO_PATH, 'utf8');
       res.json({ image });
-    } else {
-      res.json({ image: null });
-    }
-  } catch(e) {
-    res.json({ image: null });
-  }
+    } else { res.json({ image: null }); }
+  } catch(e) { res.json({ image: null }); }
 });
 
 app.post('/api/hero', (req, res) => {
@@ -33,9 +48,7 @@ app.post('/api/hero', (req, res) => {
   try {
     fs.writeFileSync(HERO_PATH, image, 'utf8');
     res.json({ ok: true });
-  } catch(e) {
-    res.status(500).json({ error: e.message });
-  }
+  } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
 app.post('/api/recipe', async (req, res) => {
@@ -61,9 +74,7 @@ app.post('/api/recipe', async (req, res) => {
     const text = data.content?.find(c => c.type === 'text')?.text || '{}';
     const recipe = JSON.parse(text.replace(/```json|```/g, '').trim());
     res.json(recipe);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
+  } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
 app.get('*', (req, res) => {
