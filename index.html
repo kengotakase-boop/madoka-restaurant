@@ -121,8 +121,6 @@ button,input,select,textarea{font-family:inherit;}
   </div>
   <div class="dish-list" id="dishList"></div>
 </div>
-
-<!-- Form View -->
 <div id="view-form">
   <div class="form-header">
     <button class="form-back" onclick="closeForm()">&#8592;</button>
@@ -137,66 +135,64 @@ button,input,select,textarea{font-family:inherit;}
       <div class="form-section">
         <label class="form-label">カテゴリ</label>
         <select class="form-select" id="fCat">
-          <option value="\u548c\u98df">\u548c\u98df</option>
-          <option value="\u6d0b\u98df">\u6d0b\u98df</option>
-          <option value="\u4e2d\u83ef">\u4e2d\u83ef</option>
-          <option value="\u30a4\u30bf\u30ea\u30a2\u30f3">\u30a4\u30bf\u30ea\u30a2\u30f3</option>
-          <option value="\u305d\u306e\u4ed6">\u305d\u306e\u4ed6</option>
+          <option value="和食">和食</option>
+          <option value="洋食">洋食</option>
+          <option value="中華">中華</option>
+          <option value="イタリアン">イタリアン</option>
+          <option value="その他">その他</option>
         </select>
       </div>
       <div class="form-section">
         <label class="form-label">場所</label>
         <select class="form-select" id="fLocation" onchange="onLocationChange()">
-          <option value="\u81ea\u5b85">\u81ea\u5b85</option>
-          <option value="\u5916\u98df">\u5916\u98df</option>
+          <option value="自宅">自宅</option>
+          <option value="外食">外食</option>
         </select>
       </div>
     </div>
     <div class="store-wrap" id="storeWrap">
       <div class="form-section">
         <label class="form-label">お店の名前</label>
-        <input class="form-input" id="fStore" type="text" placeholder="例: \u4e38\u4e43\u5185 \u6c60\u888b\u5e97"/>
+        <input class="form-input" id="fStore" type="text" placeholder="例: 丸乃内 池袋店"/>
       </div>
     </div>
     <div class="form-section">
       <div class="special-toggle" id="specialToggle" onclick="toggleSpecial()">
         <span id="specialIcon">&#9734;</span>
-        <span class="special-label" id="specialLabel">Special\u306b\u3059\u308b</span>
+        <span class="special-label" id="specialLabel">Specialにする</span>
       </div>
       <div class="want-toggle" id="wantToggle" onclick="toggleWant()">
         <span id="wantIcon">&#9651;</span>
-        <span class="want-label" id="wantLabel">\u4f5c\u308a\u305f\u3044\u30ea\u30b9\u30c8\u306b\u8ffd\u52a0</span>
+        <span class="want-label" id="wantLabel">作りたいリストに追加</span>
       </div>
     </div>
     <div class="form-section">
-      <label class="form-label">\u30e1\u30e2</label>
-      <textarea class="form-textarea" id="fNote" placeholder="\u5473\u306e\u5370\u8c61\u3001\u306a\u305c\u3053\u306e\u6599\u7406\u306a\u3069..."></textarea>
+      <label class="form-label">メモ</label>
+      <textarea class="form-textarea" id="fNote" placeholder="味の印象、なぜこの料理など..."></textarea>
     </div>
     <div class="form-section">
-      <label class="form-label">\u5199\u771f</label>
+      <label class="form-label">写真</label>
       <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="onPhotoChange()"/>
       <img class="photo-preview" id="photoPreview"/>
-      <button class="photo-btn" onclick="document.getElementById('photoInput').click()">\ud83d\udcf8 \u5199\u771f\u3092\u9078\u629e</button>
+      <button class="photo-btn" onclick="document.getElementById('photoInput').click()">📸 写真を選択</button>
     </div>
     <div class="form-section">
-      <label class="form-label">AI\u30ec\u30b7\u30d4</label>
-      <button class="ai-btn" id="aiBtn" onclick="genRecipe()">\u2728 AI\u3067\u30ec\u30b7\u30d4\u3092\u751f\u6210</button>
+      <label class="form-label">AIレシピ</label>
+      <button class="ai-btn" id="aiBtn" onclick="genRecipe()">✨ AIでレシピを生成</button>
       <div class="ai-result" id="aiResult"></div>
     </div>
     <div class="form-section">
-      <button class="save-btn" onclick="saveDish()">\u4fdd\u5b58</button>
-      <button class="delete-btn" id="deleteBtn" style="display:none" onclick="deleteDish()">\u524a\u9664</button>
+      <button class="save-btn" onclick="saveDish()">保存</button>
+      <button class="delete-btn" id="deleteBtn" style="display:none" onclick="deleteDish()">削除</button>
     </div>
   </div>
 </div>
-
-<!-- Detail View -->
 <div id="view-detail">
   <div class="detail-hero" id="detailHero">
     <img id="detailImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;opacity:.85;"/>
     <div class="detail-hero-ov"></div>
     <button class="detail-back" onclick="closeDetail()">&#8592;</button>
-    <button class="detail-edit" onclick="editCurrent()">\u7de8\u96c6</button>
+    <button class="detail-edit" onclick="editCurrent()">編集</button>
     <div class="detail-tag-wrap" id="detailTagWrap"></div>
   </div>
   <div class="detail-body">
@@ -211,390 +207,44 @@ button,input,select,textarea{font-family:inherit;}
       <div class="detail-recipe-box" id="detailRecipe"></div>
     </div>
     <div class="share-row">
-      <button class="share-btn line" onclick="shareToLine()">\ud83d\udcac LINE</button>
+      <button class="share-btn line" onclick="shareToLine()">💬 LINE</button>
       <button class="share-btn x" onclick="shareToX()">&#10005; X</button>
-      <button class="share-btn" onclick="copyShare()">\ud83d\udccb \u30b3\u30d4\u30fc</button>
+      <button class="share-btn" onclick="copyShare()">📋 コピー</button>
     </div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
-
 <script>
-// ===== State =====
-var dishes = [];
-var currentDish = null;
-var editId = null;
-var isSpecial = false;
-var isWant = false;
-var photoData = null;
-var currentRecipe = null;
-var currentSort = 'new';
-var currentFilter = 'all';
-var heroImage = null;
-
-var CATS = ['\u548c\u98df','\u6d0b\u98df','\u4e2d\u83ef','\u30a4\u30bf\u30ea\u30a2\u30f3','\u305d\u306e\u4ed6'];
-
-// ===== Server Storage =====
-async function dishesLoad() {
-  try {
-    var res = await fetch('/api/dishes');
-    if (!res.ok) throw new Error('fetch failed');
-    dishes = await res.json();
-    if (!Array.isArray(dishes)) dishes = [];
-  } catch(e) {
-    dishes = [];
-  }
-  render();
-}
-
-async function dishesSave() {
-  try {
-    await fetch('/api/dishes', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(dishes)
-    });
-  } catch(e) {
-    showToast('\u4fdd\u5b58\u306b\u5931\u6557\u3057\u307e\u3057\u305f');
-  }
-}
-
-// ===== Hero =====
-async function heroLoad() {
-  try {
-    var res = await fetch('/api/hero');
-    var data = await res.json();
-    if (data.image) {
-      heroImage = data.image;
-      var img = document.getElementById('heroImg');
-      img.src = data.image;
-      img.style.display = 'block';
-    }
-  } catch(e) {}
-}
-
-// ===== Init =====
-window.addEventListener('DOMContentLoaded', function() {
-  heroLoad();
-  dishesLoad();
-  buildFilters();
-});
-
-// ===== Filters =====
-function buildFilters() {
-  var row = document.getElementById('filterRow');
-  var btns = [
-    {key:'all', label:'\u3059\u3079\u3066'},
-    {key:'special', label:'\u2605 Special', cls:'special'},
-    {key:'want', label:'\u4f5c\u308a\u305f\u3044'}
-  ];
-  CATS.forEach(function(c){ btns.push({key:c, label:c}); });
-  row.innerHTML = '';
-  btns.forEach(function(b) {
-    var btn = document.createElement('button');
-    btn.className = 'fb' + (b.cls ? ' '+b.cls : '') + (currentFilter===b.key ? ' active' : '');
-    btn.textContent = b.label;
-    btn.onclick = function(){ currentFilter = b.key; buildFilters(); render(); };
-    row.appendChild(btn);
-  });
-}
-
-function setSort(s) {
-  currentSort = s;
-  document.getElementById('sortNew').className = 'sort-btn' + (s==='new'?' active':'');
-  document.getElementById('sortName').className = 'sort-btn' + (s==='name'?' active':'');
-  render();
-}
-
-// ===== Render =====
-function render() {
-  var q = (document.getElementById('searchInput').value||'').trim().toLowerCase();
-  var list = dishes.filter(function(d) {
-    if (currentFilter==='special' && !d.special) return false;
-    if (currentFilter==='want' && !d.want) return false;
-    if (CATS.indexOf(currentFilter)>=0 && d.category!==currentFilter) return false;
-    if (q && d.name.toLowerCase().indexOf(q)<0) return false;
-    return true;
-  });
-  if (currentSort==='name') {
-    list.sort(function(a,b){ return a.name.localeCompare(b.name,'ja'); });
-  } else {
-    list.sort(function(a,b){ return (b.createdAt||0)-(a.createdAt||0); });
-  }
-  var el = document.getElementById('dishList');
-  if (!list.length) {
-    el.innerHTML = '<div class="empty-state">\u6599\u7406\u304c\u307e\u3060\u767b\u9332\u3055\u308c\u3066\u3044\u307e\u305b\u3093</div>';
-    return;
-  }
-  el.innerHTML = list.map(function(d) {
-    var thumb = d.photo
-      ? '<img class="dish-thumb" src="'+d.photo+'" alt=""/>'
-      : '<div class="dish-thumb-empty">'+(d.special?'\u2605':'\ud83c\udf7d\ufe0f')+'</div>';
-    var tags = '';
-    if (d.special) tags += '<span class="dish-tag special">Special</span>';
-    if (d.want) tags += '<span class="dish-tag want">\u4f5c\u308a\u305f\u3044</span>';
-    tags += '<span class="dish-tag">'+esc(d.category)+'</span>';
-    if (d.location==='\u5916\u98df' && d.store) tags += '<span class="dish-tag">'+esc(d.store)+'</span>';
-    var note = d.note ? '<div class="dish-note">'+esc(d.note)+'</div>' : '';
-    return '<div class="dish-card" onclick="openDetail(\''+d.id+'\')">' +thumb+'<div class="dish-info"><div class="dish-name">'+esc(d.name)+'</div><div class="dish-meta">'+tags+'</div>'+note+'</div></div>';
-  }).join('');
-}
-
-function esc(s) {
-  if (!s) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// ===== Form =====
-function openForm(id) {
-  editId = id;
-  isSpecial = false;
-  isWant = false;
-  photoData = null;
-  currentRecipe = null;
-  document.getElementById('fName').value = '';
-  document.getElementById('fCat').value = '\u548c\u98df';
-  document.getElementById('fLocation').value = '\u81ea\u5b85';
-  document.getElementById('storeWrap').className = 'store-wrap';
-  document.getElementById('fStore').value = '';
-  document.getElementById('fNote').value = '';
-  document.getElementById('photoPreview').style.display = 'none';
-  document.getElementById('aiResult').style.display = 'none';
-  document.getElementById('aiResult').textContent = '';
-  document.getElementById('deleteBtn').style.display = 'none';
-  document.getElementById('formTitle').textContent = 'NEW DISH';
-  updateSpecialUI();
-  updateWantUI();
-
-  if (id) {
-    var d = dishes.find(function(x){ return x.id===id; });
-    if (d) {
-      document.getElementById('fName').value = d.name||'';
-      document.getElementById('fCat').value = d.category||'\u548c\u98df';
-      document.getElementById('fLocation').value = d.location||'\u81ea\u5b85';
-      if (d.location==='\u5916\u98df') document.getElementById('storeWrap').className = 'store-wrap show';
-      document.getElementById('fStore').value = d.store||'';
-      document.getElementById('fNote').value = d.note||'';
-      isSpecial = !!d.special;
-      isWant = !!d.want;
-      photoData = d.photo||null;
-      currentRecipe = d.recipe||null;
-      if (photoData) {
-        document.getElementById('photoPreview').src = photoData;
-        document.getElementById('photoPreview').style.display = 'block';
-      }
-      if (currentRecipe) {
-        document.getElementById('aiResult').textContent = formatRecipe(currentRecipe);
-        document.getElementById('aiResult').style.display = 'block';
-      }
-      updateSpecialUI();
-      updateWantUI();
-      document.getElementById('deleteBtn').style.display = 'block';
-      document.getElementById('formTitle').textContent = 'EDIT DISH';
-    }
-  }
-  document.getElementById('view-form').style.display = 'block';
-  window.scrollTo(0,0);
-}
-
-function closeForm() {
-  document.getElementById('view-form').style.display = 'none';
-}
-
-function onLocationChange() {
-  var loc = document.getElementById('fLocation').value;
-  document.getElementById('storeWrap').className = 'store-wrap' + (loc==='\u5916\u98df'?' show':'');
-}
-
-function toggleSpecial() {
-  isSpecial = !isSpecial;
-  updateSpecialUI();
-}
-function updateSpecialUI() {
-  var t = document.getElementById('specialToggle');
-  var icon = document.getElementById('specialIcon');
-  var label = document.getElementById('specialLabel');
-  t.className = 'special-toggle' + (isSpecial?' on':'');
-  icon.textContent = isSpecial ? '\u2605' : '\u2606';
-  label.textContent = isSpecial ? 'Special\u89e3\u9664' : 'Special\u306b\u3059\u308b';
-}
-
-function toggleWant() {
-  isWant = !isWant;
-  updateWantUI();
-}
-function updateWantUI() {
-  var t = document.getElementById('wantToggle');
-  var icon = document.getElementById('wantIcon');
-  var label = document.getElementById('wantLabel');
-  t.className = 'want-toggle' + (isWant?' on':'');
-  icon.textContent = isWant ? '\u25bc' : '\u25b3';
-  label.textContent = isWant ? '\u4f5c\u308a\u305f\u3044\u30ea\u30b9\u30c8\u304b\u3089\u524a\u9664' : '\u4f5c\u308a\u305f\u3044\u30ea\u30b9\u30c8\u306b\u8ffd\u52a0';
-}
-
-function onPhotoChange() {
-  var file = document.getElementById('photoInput').files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    photoData = e.target.result;
-    var preview = document.getElementById('photoPreview');
-    preview.src = photoData;
-    preview.style.display = 'block';
-  };
-  reader.readAsDataURL(file);
-}
-
-async function genRecipe() {
-  var name = document.getElementById('fName').value.trim();
-  if (!name) { showToast('\u6599\u7406\u540d\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044'); return; }
-  var btn = document.getElementById('aiBtn');
-  btn.disabled = true;
-  btn.textContent = '\u751f\u6210\u4e2d...';
-  try {
-    var res = await fetch('/api/recipe', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({dishName:name})
-    });
-    var recipe = await res.json();
-    currentRecipe = recipe;
-    var el = document.getElementById('aiResult');
-    el.textContent = formatRecipe(recipe);
-    el.style.display = 'block';
-  } catch(e) {
-    showToast('\u30ec\u30b7\u30d4\u306e\u53d6\u5f97\u306b\u5931\u6557\u3057\u307e\u3057\u305f');
-  }
-  btn.disabled = false;
-  btn.textContent = '\u2728 AI\u3067\u30ec\u30b7\u30d4\u3092\u518d\u751f\u6210';
-}
-
-function formatRecipe(r) {
-  if (!r) return '';
-  var lines = [];
-  if (r.ingredients && r.ingredients.length) {
-    lines.push('[\u6750\u6599]');
-    r.ingredients.forEach(function(i){ lines.push('\u30fb '+i); });
-    lines.push('');
-  }
-  if (r.steps && r.steps.length) {
-    lines.push('[\u624b\u9806]');
-    r.steps.forEach(function(s,i){ lines.push((i+1)+'. '+s); });
-  }
-  return lines.join('\n');
-}
-
-async function saveDish() {
-  var name = document.getElementById('fName').value.trim();
-  if (!name) { showToast('\u6599\u7406\u540d\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044'); return; }
-  var d = {
-    id: editId || ('d' + Date.now()),
-    name: name,
-    category: document.getElementById('fCat').value,
-    location: document.getElementById('fLocation').value,
-    store: document.getElementById('fStore').value.trim(),
-    note: document.getElementById('fNote').value.trim(),
-    special: isSpecial,
-    want: isWant,
-    photo: photoData,
-    recipe: currentRecipe,
-    createdAt: editId ? (dishes.find(function(x){return x.id===editId;})||{}).createdAt || Date.now() : Date.now()
-  };
-  if (editId) {
-    var idx = dishes.findIndex(function(x){ return x.id===editId; });
-    if (idx>=0) dishes[idx] = d; else dishes.push(d);
-  } else {
-    dishes.push(d);
-  }
-  await dishesSave();
-  render();
-  closeForm();
-  showToast('\u4fdd\u5b58\u3057\u307e\u3057\u305f\u2713');
-}
-
-async function deleteDish() {
-  if (!editId) return;
-  if (!confirm('\u524a\u9664\u3057\u307e\u3059\u304b\uff1f')) return;
-  dishes = dishes.filter(function(x){ return x.id!==editId; });
-  await dishesSave();
-  render();
-  closeForm();
-  showToast('\u524a\u9664\u3057\u307e\u3057\u305f');
-}
-
-// ===== Detail =====
-function openDetail(id) {
-  var d = dishes.find(function(x){ return x.id===id; });
-  if (!d) return;
-  currentDish = d;
-  document.getElementById('detailName').textContent = d.name;
-  var img = document.getElementById('detailImg');
-  if (d.photo) { img.src = d.photo; img.style.display = 'block'; }
-  else { img.style.display = 'none'; }
-  var tagWrap = document.getElementById('detailTagWrap');
-  var tags = '';
-  if (d.special) tags += '<span class="detail-badge special">Special</span>';
-  if (d.want) tags += '<span class="detail-badge want">\u4f5c\u308a\u305f\u3044</span>';
-  tags += '<span class="detail-badge">'+esc(d.category)+'</span>';
-  tagWrap.innerHTML = tags;
-  var meta = '<span class="detail-meta-item">'+esc(d.category)+'</span>';
-  if (d.location) meta += '<span class="detail-meta-item">'+esc(d.location)+'</span>';
-  if (d.location==='\u5916\u98df' && d.store) meta += '<span class="detail-meta-item">'+esc(d.store)+'</span>';
-  document.getElementById('detailMeta').innerHTML = meta;
-  var noteEl = document.getElementById('detailNote');
-  var noteSection = document.getElementById('detailNoteSection');
-  if (d.note) { noteEl.textContent = d.note; noteSection.style.display = 'block'; }
-  else { noteSection.style.display = 'none'; }
-  var recipeSection = document.getElementById('detailRecipeSection');
-  if (d.recipe) {
-    document.getElementById('detailRecipe').textContent = formatRecipe(d.recipe);
-    recipeSection.style.display = 'block';
-  } else {
-    recipeSection.style.display = 'none';
-  }
-  document.getElementById('view-detail').style.display = 'block';
-  window.scrollTo(0,0);
-}
-
-function closeDetail() {
-  document.getElementById('view-detail').style.display = 'none';
-  currentDish = null;
-}
-
-function editCurrent() {
-  if (!currentDish) return;
-  closeDetail();
-  openForm(currentDish.id);
-}
-
-// ===== Share =====
-function shareText() {
-  if (!currentDish) return '';
-  var t = 'madoka Restaurant\n\u300c'+currentDish.name+'\u300d';
-  if (currentDish.special) t += ' \u2605Special';
-  if (currentDish.note) t += '\n\n'+currentDish.note;
-  return t;
-}
-function shareToLine() {
-  var url = 'https://line.me/R/msg/text/?'+encodeURIComponent(shareText());
-  window.open(url,'_blank');
-}
-function shareToX() {
-  var url = 'https://twitter.com/intent/tweet?text='+encodeURIComponent(shareText());
-  window.open(url,'_blank');
-}
-function copyShare() {
-  navigator.clipboard.writeText(shareText()).then(function(){ showToast('\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f'); }).catch(function(){ showToast('\u30b3\u30d4\u30fc\u306b\u5931\u6557\u3057\u307e\u3057\u305f'); });
-}
-
-// ===== Toast =====
-function showToast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show';
-  setTimeout(function(){ t.className = 'toast'; }, 2000);
-}
+var dishes=[],currentDish=null,editId=null,isSpecial=false,isWant=false,photoData=null,currentRecipe=null,currentSort='new',currentFilter='all',heroImage=null;
+var CATS=['和食','洋食','中華','イタリアン','その他'];
+async function dishesLoad(){try{var r=await fetch('/api/dishes');if(!r.ok)throw new Error('fail');dishes=await r.json();if(!Array.isArray(dishes))dishes=[];}catch(e){dishes=[];}render();}
+async function dishesSave(){try{await fetch('/api/dishes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(dishes)});}catch(e){showToast('保存に失敗しました');}}
+async function heroLoad(){try{var r=await fetch('/api/hero');var d=await r.json();if(d.image){heroImage=d.image;var img=document.getElementById('heroImg');img.src=d.image;img.style.display='block';}}catch(e){}}
+window.addEventListener('DOMContentLoaded',function(){heroLoad();dishesLoad();buildFilters();});
+function buildFilters(){var row=document.getElementById('filterRow');var btns=[{key:'all',label:'すべて'},{key:'special',label:'★ Special',cls:'special'},{key:'want',label:'作りたい'}];CATS.forEach(function(c){btns.push({key:c,label:c});});row.innerHTML='';btns.forEach(function(b){var btn=document.createElement('button');btn.className='fb'+(b.cls?' '+b.cls:'')+(currentFilter===b.key?' active':'');btn.textContent=b.label;btn.onclick=function(){currentFilter=b.key;buildFilters();render();};row.appendChild(btn);});}
+function setSort(s){currentSort=s;document.getElementById('sortNew').className='sort-btn'+(s==='new'?' active':'');document.getElementById('sortName').className='sort-btn'+(s==='name'?' active':'');render();}
+function render(){var q=(document.getElementById('searchInput').value||'').trim().toLowerCase();var list=dishes.filter(function(d){if(currentFilter==='special'&&!d.special)return false;if(currentFilter==='want'&&!d.want)return false;if(CATS.indexOf(currentFilter)>=0&&d.category!==currentFilter)return false;if(q&&d.name.toLowerCase().indexOf(q)<0)return false;return true;});if(currentSort==='name'){list.sort(function(a,b){return a.name.localeCompare(b.name,'ja');});}else{list.sort(function(a,b){return(b.createdAt||0)-(a.createdAt||0);});}var el=document.getElementById('dishList');if(!list.length){el.innerHTML='<div class="empty-state">料理がまだ登録されていません</div>';return;}el.innerHTML=list.map(function(d){var thumb=d.photo?'<img class="dish-thumb" src="'+d.photo+'" alt=""/>':"<div class='dish-thumb-empty'>"+(d.special?'★':'🍽️')+'</div>';var tags='';if(d.special)tags+='<span class="dish-tag special">Special</span>';if(d.want)tags+='<span class="dish-tag want">作りたい</span>';tags+='<span class="dish-tag">'+esc(d.category)+'</span>';if(d.location==='外食'&&d.store)tags+='<span class="dish-tag">'+esc(d.store)+'</span>';var note=d.note?'<div class="dish-note">'+esc(d.note)+'</div>':'';return'<div class="dish-card" onclick="openDetail(''+d.id+'')">'+thumb+'<div class="dish-info"><div class="dish-name">'+esc(d.name)+'</div><div class="dish-meta">'+tags+'</div>'+note+'</div></div>';}).join('');}
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function openForm(id){editId=id;isSpecial=false;isWant=false;photoData=null;currentRecipe=null;document.getElementById('fName').value='';document.getElementById('fCat').value='和食';document.getElementById('fLocation').value='自宅';document.getElementById('storeWrap').className='store-wrap';document.getElementById('fStore').value='';document.getElementById('fNote').value='';document.getElementById('photoPreview').style.display='none';document.getElementById('aiResult').style.display='none';document.getElementById('aiResult').textContent='';document.getElementById('deleteBtn').style.display='none';document.getElementById('formTitle').textContent='NEW DISH';updateSpecialUI();updateWantUI();if(id){var d=dishes.find(function(x){return x.id===id;});if(d){document.getElementById('fName').value=d.name||'';document.getElementById('fCat').value=d.category||'和食';document.getElementById('fLocation').value=d.location||'自宅';if(d.location==='外食')document.getElementById('storeWrap').className='store-wrap show';document.getElementById('fStore').value=d.store||'';document.getElementById('fNote').value=d.note||'';isSpecial=!!d.special;isWant=!!d.want;photoData=d.photo||null;currentRecipe=d.recipe||null;if(photoData){document.getElementById('photoPreview').src=photoData;document.getElementById('photoPreview').style.display='block';}if(currentRecipe){document.getElementById('aiResult').textContent=formatRecipe(currentRecipe);document.getElementById('aiResult').style.display='block';}updateSpecialUI();updateWantUI();document.getElementById('deleteBtn').style.display='block';document.getElementById('formTitle').textContent='EDIT DISH';}}document.getElementById('view-form').style.display='block';window.scrollTo(0,0);}
+function closeForm(){document.getElementById('view-form').style.display='none';}
+function onLocationChange(){var loc=document.getElementById('fLocation').value;document.getElementById('storeWrap').className='store-wrap'+(loc==='外食'?' show':'');}
+function toggleSpecial(){isSpecial=!isSpecial;updateSpecialUI();}
+function updateSpecialUI(){var t=document.getElementById('specialToggle');var icon=document.getElementById('specialIcon');var label=document.getElementById('specialLabel');t.className='special-toggle'+(isSpecial?' on':'');icon.textContent=isSpecial?'★':'☆';label.textContent=isSpecial?'Special解除':'Specialにする';}
+function toggleWant(){isWant=!isWant;updateWantUI();}
+function updateWantUI(){var t=document.getElementById('wantToggle');var icon=document.getElementById('wantIcon');var label=document.getElementById('wantLabel');t.className='want-toggle'+(isWant?' on':'');icon.textContent=isWant?'▼':'△';label.textContent=isWant?'作りたいリストから削除':'作りたいリストに追加';}
+function onPhotoChange(){var file=document.getElementById('photoInput').files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){photoData=e.target.result;var preview=document.getElementById('photoPreview');preview.src=photoData;preview.style.display='block';};reader.readAsDataURL(file);}
+async function genRecipe(){var name=document.getElementById('fName').value.trim();if(!name){showToast('料理名を入力してください');return;}var btn=document.getElementById('aiBtn');btn.disabled=true;btn.textContent='生成中...';try{var r=await fetch('/api/recipe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({dishName:name})});var recipe=await r.json();currentRecipe=recipe;var el=document.getElementById('aiResult');el.textContent=formatRecipe(recipe);el.style.display='block';}catch(e){showToast('レシピの取得に失敗しました');}btn.disabled=false;btn.textContent='✨ AIでレシピを再生成';}
+function formatRecipe(r){if(!r)return'';var lines=[];if(r.ingredients&&r.ingredients.length){lines.push('[材料]');r.ingredients.forEach(function(i){lines.push('・ '+i);});lines.push('');}if(r.steps&&r.steps.length){lines.push('[手順]');r.steps.forEach(function(s,i){lines.push((i+1)+'. '+s);});}return lines.join('\n');}
+async function saveDish(){var name=document.getElementById('fName').value.trim();if(!name){showToast('料理名を入力してください');return;}var d={id:editId||('d'+Date.now()),name:name,category:document.getElementById('fCat').value,location:document.getElementById('fLocation').value,store:document.getElementById('fStore').value.trim(),note:document.getElementById('fNote').value.trim(),special:isSpecial,want:isWant,photo:photoData,recipe:currentRecipe,createdAt:editId?(dishes.find(function(x){return x.id===editId;})||{}).createdAt||Date.now():Date.now()};if(editId){var idx=dishes.findIndex(function(x){return x.id===editId;});if(idx>=0)dishes[idx]=d;else dishes.push(d);}else{dishes.push(d);}await dishesSave();render();closeForm();showToast('保存しました✓');}
+async function deleteDish(){if(!editId)return;if(!confirm('削除しますか？'))return;dishes=dishes.filter(function(x){return x.id!==editId;});await dishesSave();render();closeForm();showToast('削除しました');}
+function openDetail(id){var d=dishes.find(function(x){return x.id===id;});if(!d)return;currentDish=d;document.getElementById('detailName').textContent=d.name;var img=document.getElementById('detailImg');if(d.photo){img.src=d.photo;img.style.display='block';}else{img.style.display='none';}var tagWrap=document.getElementById('detailTagWrap');var tags='';if(d.special)tags+='<span class="detail-badge special">Special</span>';if(d.want)tags+='<span class="detail-badge want">作りたい</span>';tags+='<span class="detail-badge">'+esc(d.category)+'</span>';tagWrap.innerHTML=tags;var meta='<span class="detail-meta-item">'+esc(d.category)+'</span>';if(d.location)meta+='<span class="detail-meta-item">'+esc(d.location)+'</span>';if(d.location==='外食'&&d.store)meta+='<span class="detail-meta-item">'+esc(d.store)+'</span>';document.getElementById('detailMeta').innerHTML=meta;var noteEl=document.getElementById('detailNote');var noteSection=document.getElementById('detailNoteSection');if(d.note){noteEl.textContent=d.note;noteSection.style.display='block';}else{noteSection.style.display='none';}var recipeSection=document.getElementById('detailRecipeSection');if(d.recipe){document.getElementById('detailRecipe').textContent=formatRecipe(d.recipe);recipeSection.style.display='block';}else{recipeSection.style.display='none';}document.getElementById('view-detail').style.display='block';window.scrollTo(0,0);}
+function closeDetail(){document.getElementById('view-detail').style.display='none';currentDish=null;}
+function editCurrent(){if(!currentDish)return;closeDetail();openForm(currentDish.id);}
+function shareText(){if(!currentDish)return'';var t='madoka Restaurant\n「'+currentDish.name+'」';if(currentDish.special)t+=' ★Special';if(currentDish.note)t+='\n\n'+currentDish.note;return t;}
+function shareToLine(){var url='https://line.me/R/msg/text/?'+encodeURIComponent(shareText());window.open(url,'_blank');}
+function shareToX(){var url='https://twitter.com/intent/tweet?text='+encodeURIComponent(shareText());window.open(url,'_blank');}
+function copyShare(){navigator.clipboard.writeText(shareText()).then(function(){showToast('コピーしました');}).catch(function(){showToast('コピーに失敗しました');});}
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.className='toast show';setTimeout(function(){t.className='toast';},2000);}
 </script>
 </body>
 </html>
