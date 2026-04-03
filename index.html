@@ -67,9 +67,6 @@ button,input,select,textarea{font-family:inherit;}
 .form-row{display:flex;gap:12px;}
 .form-row .form-section{flex:1;}
 .form-select{width:100%;padding:12px 14px;border:1px solid #ddd;font-size:13px;outline:none;background:#fafafa;color:#111;appearance:none;}
-.star-row{display:flex;gap:6px;}
-.star-btn{font-size:24px;cursor:pointer;background:none;border:none;color:#ddd;padding:2px;}
-.star-btn.on{color:#C9A84C;}
 .special-toggle{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #ddd;background:#fafafa;cursor:pointer;}
 .special-toggle.on{border-color:#C9A84C;background:#fffbf0;}
 .special-label{font-size:13px;color:#555;}
@@ -141,6 +138,7 @@ button,input,select,textarea{font-family:inherit;}
       <button class="fb" data-genre="洋食">洋食</button>
       <button class="fb" data-genre="中華">中華</button>
       <button class="fb" data-genre="イタリアン">イタリアン</button>
+      <button class="fb" data-genre="アジア">アジア</button>
       <button class="fb" data-genre="その他">その他</button>
     </div>
   </div>
@@ -182,19 +180,12 @@ button,input,select,textarea{font-family:inherit;}
           <option value="洋食">洋食</option>
           <option value="中華">中華</option>
           <option value="イタリアン">イタリアン</option>
+          <option value="アジア">アジア</option>
           <option value="その他">その他</option>
         </select>
       </div>
     </div>
     <div class="form-section">
-      <label class="form-label">評価</label>
-      <div class="star-row" id="star-row">
-        <button class="star-btn" data-v="1">★</button>
-        <button class="star-btn" data-v="2">★</button>
-        <button class="star-btn" data-v="3">★</button>
-        <button class="star-btn" data-v="4">★</button>
-        <button class="star-btn" data-v="5">★</button>
-      </div>
     </div>
     <div class="form-section">
       <button class="special-toggle" id="special-toggle">
@@ -573,25 +564,29 @@ function generateRecipe() {
   if (ingredients) prompt += '材料のヒント：' + ingredients;
   prompt += '分量（2人前）、材料リスト、作り方を簡潔に日本語で答えてください。';
 
-  fetch('https://api.anthropic.com/v1/messages', {
+  fetch('/api/recipe', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 800,
-      messages: [{ role: 'user', content: prompt }]
-    })
+    body: JSON.stringify({ dishName: name + (ingredients ? '（材料ヒント：' + ingredients + '）' : '') })
   })
   .then(function(r){ return r.json(); })
   .then(function(data) {
-    var text = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text : 'レシピを取得できませんでした';
+    if (data.error) throw new Error(data.error);
+    var text = '';
+    if (data.ingredients && data.ingredients.length) {
+      text += '【材料（2人前）】\n' + data.ingredients.join('\n') + '\n\n';
+    }
+    if (data.steps && data.steps.length) {
+      text += '【作り方】\n' + data.steps.map(function(s,i){ return (i+1)+'. '+s; }).join('\n');
+    }
+    if (!text) text = JSON.stringify(data, null, 2);
     resultEl.textContent = text;
     resultEl.style.display = 'block';
     btn.disabled = false;
     btn.textContent = '✦ AIでレシピを再生成する';
   })
   .catch(function(e) {
-    resultEl.textContent = 'エラーが発生しました：' + e.message;
+    resultEl.textContent = 'エラー：' + e.message;
     resultEl.style.display = 'block';
     btn.disabled = false;
     btn.textContent = '✦ AIでレシピを生成する';
