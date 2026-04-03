@@ -1,91 +1,392 @@
 <!DOCTYPE html>
-<html lang="ja"><head>
+<html lang="ja">
+<head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
 <title>madoka Restaurant</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}body{background:#fff;font-family:'Hiragino Sans',sans-serif;-webkit-font-smoothing:antialiased;}button,input,select,textarea{font-family:inherit;}::-webkit-scrollbar{display:none;}
-.hero{position:relative;width:100%;height:420px;overflow:hidden;background:#000;}.hero img{width:100%;height:100%;object-fit:cover;opacity:0.82;display:block;}.hero-ov{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.15),rgba(0,0,0,.65));}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#fff;font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif;-webkit-font-smoothing:antialiased;}
+button,input,select,textarea{font-family:inherit;}
+::-webkit-scrollbar{display:none;}
+.hero{position:relative;width:100%;height:420px;overflow:hidden;background:#000;}
+.hero img{width:100%;height:100%;object-fit:cover;opacity:0.82;display:block;}
+.hero-ov{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.15),rgba(0,0,0,.65));}
 .hero-add{position:absolute;top:20px;right:20px;background:rgba(255,255,255,.93);color:#111;border:none;padding:10px 18px;font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-weight:700;}
-.hero-body{position:absolute;bottom:28px;left:24px;}.hero-cap{font-size:9px;letter-spacing:5px;color:rgba(255,255,255,.6);text-transform:uppercase;margin-bottom:10px;}.hero-t1{font-size:48px;font-weight:300;color:#fff;line-height:1;font-family:Georgia,serif;}.hero-t2{font-size:52px;font-style:italic;color:#C9A84C;font-family:Georgia,serif;line-height:1.1;}
-.main{max-width:800px;margin:0 auto;background:#fff;min-height:100vh;}.search-wrap{padding:14px 20px 8px;}.search-input{width:100%;padding:11px 16px;border:1px solid #ddd;font-size:13px;outline:none;color:#333;background:#f9f9f9;}
-.filter-bar{padding:0 20px 8px;border-bottom:1px solid #eee;}.filter-row{display:flex;gap:6px;overflow-x:auto;padding:8px 0;}
-.fb{padding:7px 14px;border:1px solid #bbb;background:#fff;color:#555;font-size:11px;cursor:pointer;white-space:nowrap;}.fb.active{background:#111;color:#fff;border-color:#111;}.fb.special{color:#C9A84C;border-color:#C9A84C;}.fb.special.active{background:#C9A84C;color:#fff;}
-.sort-bar{display:flex;align-items:center;gap:10px;padding:8px 20px;border-bottom:1px solid #eee;}.sort-label{font-size:9px;letter-spacing:3px;color:#aaa;text-transform:uppercase;}.sort-btn{padding:6px 14px;border:none;background:#fff;color:#999;font-size:11px;cursor:pointer;}.sort-btn.active{background:#111;color:#fff;}
-.dish-list{padding:8px 20px 80px;}.dish-card{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #eee;cursor:pointer;}.dish-thumb{width:64px;height:64px;object-fit:cover;flex-shrink:0;background:#eee;}.dish-thumb-empty{width:64px;height:64px;flex-shrink:0;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:22px;}
-.dish-info{flex:1;min-width:0;}.dish-name{font-size:14px;font-weight:600;color:#111;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}.dish-meta{font-size:11px;color:#888;display:flex;gap:8px;align-items:center;}.dish-tag{padding:2px 7px;font-size:10px;border:1px solid #ddd;color:#777;}.dish-tag.special{border-color:#C9A84C;color:#C9A84C;}.dish-note{font-size:11px;color:#aaa;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.hero-body{position:absolute;bottom:28px;left:24px;}
+.hero-cap{font-size:9px;letter-spacing:5px;color:rgba(255,255,255,.6);text-transform:uppercase;margin-bottom:10px;}
+.hero-t1{font-size:48px;font-weight:300;color:#fff;line-height:1;font-family:Georgia,serif;}
+.hero-t2{font-size:52px;font-style:italic;color:#C9A84C;font-family:Georgia,serif;line-height:1.1;}
+.main{max-width:800px;margin:0 auto;background:#fff;min-height:100vh;}
+.search-wrap{padding:14px 20px 8px;}
+.search-input{width:100%;padding:11px 16px;border:1px solid #ddd;font-size:13px;outline:none;color:#333;background:#f9f9f9;}
+.filter-bar{padding:0 20px 8px;border-bottom:1px solid #eee;}
+.filter-row{display:flex;gap:6px;overflow-x:auto;padding:8px 0;}
+.fb{padding:7px 14px;border:1px solid #bbb;background:#fff;color:#555;font-size:11px;cursor:pointer;white-space:nowrap;}
+.fb.active{background:#111;color:#fff;border-color:#111;}
+.fb.special{color:#C9A84C;border-color:#C9A84C;}
+.fb.special.active{background:#C9A84C;color:#fff;}
+.sort-bar{display:flex;align-items:center;gap:10px;padding:8px 20px;border-bottom:1px solid #eee;}
+.sort-label{font-size:9px;letter-spacing:3px;color:#aaa;text-transform:uppercase;}
+.sort-btn{padding:6px 14px;border:none;background:#fff;color:#999;font-size:11px;cursor:pointer;}
+.sort-btn.active{background:#111;color:#fff;}
+.dish-list{padding:8px 20px 80px;}
+.dish-card{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #eee;cursor:pointer;}
+.dish-thumb{width:64px;height:64px;object-fit:cover;flex-shrink:0;background:#eee;}
+.dish-thumb-empty{width:64px;height:64px;flex-shrink:0;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.dish-info{flex:1;min-width:0;}
+.dish-name{font-size:14px;font-weight:600;color:#111;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dish-meta{font-size:11px;color:#888;display:flex;gap:8px;align-items:center;}
+.dish-tag{padding:2px 7px;font-size:10px;border:1px solid #ddd;color:#777;}
+.dish-tag.special{border-color:#C9A84C;color:#C9A84C;}
+.dish-note{font-size:11px;color:#aaa;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .empty-state{text-align:center;padding:60px 20px;color:#bbb;font-size:13px;}
-#view-form{display:none;position:fixed;inset:0;background:#fff;z-index:100;overflow-y:auto;}.form-header{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #eee;position:sticky;top:0;background:#fff;z-index:10;}.form-back{background:none;border:none;font-size:22px;cursor:pointer;color:#333;}.form-title{font-size:15px;font-weight:700;letter-spacing:1px;}.form-body{padding:20px;}.form-section{margin-bottom:20px;}.form-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#888;display:block;margin-bottom:8px;}
-.form-input{width:100%;padding:12px 14px;border:1px solid #ddd;font-size:13px;outline:none;background:#fafafa;color:#111;}.form-textarea{width:100%;padding:12px 14px;border:1px solid #ddd;font-size:13px;outline:none;background:#fafafa;resize:vertical;min-height:80px;color:#111;}.form-row{display:flex;gap:12px;}.form-row .form-section{flex:1;}.form-select{width:100%;padding:12px 14px;border:1px solid #ddd;font-size:13px;outline:none;background:#fafafa;color:#111;appearance:none;}
-.special-toggle{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #ddd;background:#fafafa;cursor:pointer;}.special-toggle.on{border-color:#C9A84C;background:#fffbf0;}.special-label{font-size:13px;color:#555;}
-.photo-btn{width:100%;padding:14px;border:2px dashed #ddd;background:#fafafa;font-size:12px;color:#888;cursor:pointer;text-align:center;}.photo-preview{width:100%;max-height:200px;object-fit:cover;display:none;}
-.ai-btn{width:100%;padding:14px;background:#111;color:#fff;border:none;font-size:12px;letter-spacing:2px;cursor:pointer;margin-bottom:12px;}.ai-btn:disabled{background:#aaa;}.ai-result{background:#f9f9f9;border:1px solid #eee;padding:14px;font-size:12px;color:#555;line-height:1.7;display:none;margin-bottom:12px;white-space:pre-wrap;}
-.save-btn{width:100%;padding:16px;background:#111;color:#fff;border:none;font-size:12px;letter-spacing:3px;cursor:pointer;}.delete-btn{width:100%;padding:14px;background:#fff;color:#cc3333;border:1px solid #cc3333;font-size:12px;cursor:pointer;margin-top:10px;}
-#view-detail{display:none;position:fixed;inset:0;background:#fff;z-index:100;overflow-y:auto;}.detail-hero{position:relative;width:100%;height:260px;background:#111;}.detail-hero img{width:100%;height:100%;object-fit:cover;opacity:.85;}.detail-hero-ov{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,.7));}.detail-back{position:absolute;top:16px;left:16px;background:rgba(0,0,0,.4);color:#fff;border:none;font-size:20px;cursor:pointer;padding:6px 10px;}.detail-edit{position:absolute;top:16px;right:16px;background:rgba(0,0,0,.4);color:#fff;border:none;font-size:11px;cursor:pointer;padding:8px 14px;}.detail-tag-wrap{position:absolute;bottom:16px;left:16px;display:flex;gap:6px;}.detail-badge{padding:4px 10px;font-size:10px;border:1px solid rgba(255,255,255,.6);color:#fff;}.detail-badge.special{border-color:#C9A84C;color:#C9A84C;}
-.detail-body{padding:20px;}.detail-name{font-size:26px;font-weight:700;color:#111;margin-bottom:8px;font-family:Georgia,serif;}.detail-meta{display:flex;gap:12px;margin-bottom:16px;}.detail-meta-item{font-size:11px;color:#888;}.detail-section{margin-bottom:18px;}.detail-section-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#aaa;margin-bottom:10px;}.detail-note{font-size:13px;color:#555;line-height:1.7;white-space:pre-wrap;}.detail-recipe-box{background:#f9f9f9;border:1px solid #eee;padding:16px;font-size:12px;color:#555;line-height:1.8;white-space:pre-wrap;}
-.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:12px 24px;font-size:12px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;}.toast.show{opacity:1;}
-</style></head><body>
+#view-form{display:none;position:fixed;inset:0;background:#fff;z-index:100;overflow-y:auto;}
+.form-header{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #eee;position:sticky;top:0;background:#fff;z-index:10;}
+.form-back{background:none;border:none;font-size:22px;cursor:pointer;color:#333;}
+.form-title{font-size:15px;font-weight:700;letter-spacing:1px;}
+.form-body{padding:20px;}
+.form-section{margin-bottom:20px;}
+.form-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#888;display:block;margin-bottom:8px;}
+.form-input{width:100%;padding:12px 14px;border:1px solid #ddd;font-size:13px;outline:none;background:#fafafa;color:#111;}
+.form-textarea{width:100%;padding:12px 14px;border:1px solid #ddd;font-size:13px;outline:none;background:#fafafa;resize:vertical;min-height:80px;color:#111;}
+.form-row{display:flex;gap:12px;}
+.form-row .form-section{flex:1;}
+.form-select{width:100%;padding:12px 14px;border:1px solid #ddd;font-size:13px;outline:none;background:#fafafa;color:#111;appearance:none;}
+.special-toggle{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #ddd;background:#fafafa;cursor:pointer;}
+.special-toggle.on{border-color:#C9A84C;background:#fffbf0;}
+.special-label{font-size:13px;color:#555;}
+.photo-btn{width:100%;padding:14px;border:2px dashed #ddd;background:#fafafa;font-size:12px;color:#888;cursor:pointer;text-align:center;}
+.photo-preview{width:100%;max-height:200px;object-fit:cover;display:none;}
+.ai-btn{width:100%;padding:14px;background:#111;color:#fff;border:none;font-size:12px;letter-spacing:2px;cursor:pointer;margin-bottom:12px;}
+.ai-btn:disabled{background:#aaa;}
+.ai-result{background:#f9f9f9;border:1px solid #eee;padding:14px;font-size:12px;color:#555;line-height:1.7;display:none;margin-bottom:12px;white-space:pre-wrap;}
+.save-btn{width:100%;padding:16px;background:#111;color:#fff;border:none;font-size:12px;letter-spacing:3px;cursor:pointer;}
+.delete-btn{width:100%;padding:14px;background:#fff;color:#cc3333;border:1px solid #cc3333;font-size:12px;cursor:pointer;margin-top:10px;}
+#view-detail{display:none;position:fixed;inset:0;background:#fff;z-index:100;overflow-y:auto;}
+.detail-hero{position:relative;width:100%;height:260px;background:#111;}
+.detail-hero img{width:100%;height:100%;object-fit:cover;opacity:.85;}
+.detail-hero-ov{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,.7));}
+.detail-back{position:absolute;top:16px;left:16px;background:rgba(0,0,0,.4);color:#fff;border:none;font-size:20px;cursor:pointer;padding:6px 10px;}
+.detail-edit{position:absolute;top:16px;right:16px;background:rgba(0,0,0,.4);color:#fff;border:none;font-size:11px;cursor:pointer;padding:8px 14px;}
+.detail-tag-wrap{position:absolute;bottom:16px;left:16px;display:flex;gap:6px;}
+.detail-badge{padding:4px 10px;font-size:10px;border:1px solid rgba(255,255,255,.6);color:#fff;}
+.detail-badge.special{border-color:#C9A84C;color:#C9A84C;}
+.detail-body{padding:20px;}
+.detail-name{font-size:26px;font-weight:700;color:#111;margin-bottom:8px;font-family:Georgia,serif;}
+.detail-meta{display:flex;gap:12px;margin-bottom:16px;}
+.detail-meta-item{font-size:11px;color:#888;}
+.detail-section{margin-bottom:18px;}
+.detail-section-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#aaa;margin-bottom:10px;}
+.detail-note{font-size:13px;color:#555;line-height:1.7;white-space:pre-wrap;}
+.detail-recipe-box{background:#f9f9f9;border:1px solid #eee;padding:16px;font-size:12px;color:#555;line-height:1.8;white-space:pre-wrap;}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:12px 24px;font-size:12px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
 <div class="main">
 <div id="view-home">
-<div class="hero" id="hero"><img id="hero-img" src="" alt=""/><div class="hero-ov"></div><button class="hero-add" id="btn-add">+ ADD</button><div class="hero-body"><div class="hero-cap">FAMILY RECIPE BOOK</div><div class="hero-t1">madoka</div><div class="hero-t2">Restaurant</div></div></div>
-<div class="search-wrap"><input class="search-input" id="search-input" placeholder="Search..." type="text"/></div>
-<div class="filter-bar">
-<div class="filter-row" id="filter-row"><button class="fb active" data-f="all">All</button><button class="fb special" data-f="special">* Special</button><button class="fb" data-f="作りたい">&#9825; 作りたい</button><button class="fb" data-f="自宅">自宅</button><button class="fb" data-f="外食">外食</button></div>
-<div class="filter-row" id="genre-row"><button class="fb active" data-g="all">All Genre</button><button class="fb" data-g="和食">和食</button><button class="fb" data-g="洋食">洋食</button><button class="fb" data-g="中華">中華</button><button class="fb" data-g="イタリアン">イタリアン</button><button class="fb" data-g="アジア">アジア</button><button class="fb" data-g="その他">その他</button></div>
+  <div class="hero" id="hero">
+    <img id="hero-img" src="" alt=""/>
+    <div class="hero-ov"></div>
+    <button class="hero-add" id="btn-add">+ ADD</button>
+    <div class="hero-body">
+      <div class="hero-cap">FAMILY RECIPE BOOK</div>
+      <div class="hero-t1">madoka</div>
+      <div class="hero-t2">Restaurant</div>
+    </div>
+  </div>
+  <div class="search-wrap"><input class="search-input" id="search-input" placeholder="Search..." type="text"/></div>
+  <div class="filter-bar">
+    <div class="filter-row" id="filter-row">
+      <button class="fb active" data-f="all">All</button>
+      <button class="fb special" data-f="special">* Special</button>
+      <button class="fb" data-f="作りたい">&#9825; 作りたい</button>
+      <button class="fb" data-f="自宅">自宅</button>
+      <button class="fb" data-f="外食">外食</button>
+    </div>
+    <div class="filter-row" id="genre-row">
+      <button class="fb active" data-g="all">All Genre</button>
+      <button class="fb" data-g="和食">和食</button>
+      <button class="fb" data-g="洋食">洋食</button>
+      <button class="fb" data-g="中華">中華</button>
+      <button class="fb" data-g="イタリアン">イタリアン</button>
+      <button class="fb" data-g="アジア">アジア</button>
+      <button class="fb" data-g="その他">その他</button>
+    </div>
+  </div>
+  <div class="sort-bar">
+    <span class="sort-label">SORT</span>
+    <button class="sort-btn active" data-s="new">New</button>
+    <button class="sort-btn" data-s="name">Name</button>
+  </div>
+  <div class="dish-list" id="dish-list"></div>
 </div>
-<div class="sort-bar"><span class="sort-label">SORT</span><button class="sort-btn active" data-s="new">New</button><button class="sort-btn" data-s="name">Name</button></div>
-<div class="dish-list" id="dish-list"></div></div>
-<div id="view-form"><div class="form-header"><button class="form-back" id="btn-back2">&#8592;</button><span class="form-title" id="form-title">NEW DISH</span></div>
-<div class="form-body">
-<div class="form-section"><label class="form-label">料理名 *</label><input class="form-input" id="f-name" type="text"/></div>
-<div class="form-row"><div class="form-section"><label class="form-label">カテゴリ</label><select class="form-select" id="f-type"><option value="自宅">自宅</option><option value="外食">外食</option><option value="作りたい">作りたい</option></select></div>
-<div class="form-section"><label class="form-label">ジャンル</label><select class="form-select" id="f-genre"><option value="和食">和食</option><option value="洋食">洋食</option><option value="中華">中華</option><option value="イタリアン">イタリアン</option><option value="アジア">アジア</option><option value="その他">その他</option></select></div></div>
-<div class="form-section"><button class="special-toggle" id="special-toggle"><span style="font-size:16px;">&#10022;</span><span class="special-label">Special</span></button></div>
-<div class="form-section"><label class="form-label">メモ</label><textarea class="form-textarea" id="f-memo" rows="3"></textarea></div>
-<div class="form-section"><label class="form-label">写真</label><input type="file" id="f-photo-input" accept="image/*" style="display:none"/><button class="photo-btn" id="f-photo-btn">&#128247; 写真を追加</button><img class="photo-preview" id="f-photo-preview"/></div>
-<div class="form-section"><label class="form-label">材料</label><textarea class="form-textarea" id="f-ingredients" rows="5"></textarea></div>
-<div class="form-section"><label class="form-label">作り方</label><textarea class="form-textarea" id="f-steps" rows="5"></textarea></div>
-<div class="form-section"><button class="ai-btn" id="ai-btn">&#10022; AIでレシピを生成</button><div class="ai-result" id="ai-result"></div></div>
-<button class="save-btn" id="save-btn">SAVE</button><button class="delete-btn" id="delete-btn" style="display:none">DELETE</button>
-</div></div>
-<div id="view-detail"><div class="detail-hero" id="d-hero"><img id="d-img" src="" alt=""/><div class="detail-hero-ov"></div><button class="detail-back" id="btn-back3">&#8592;</button><button class="detail-edit" id="btn-edit">EDIT</button><div class="detail-tag-wrap" id="d-tags"></div></div>
-<div class="detail-body"><div class="detail-name" id="d-name"></div><div class="detail-meta" id="d-meta"></div>
-<div class="detail-section" id="sec-memo" style="display:none"><div class="detail-section-title">MEMO</div><div class="detail-note" id="d-memo"></div></div>
-<div class="detail-section" id="sec-ing" style="display:none"><div class="detail-section-title">材料</div><div class="detail-note" id="d-ingredients"></div></div>
-<div class="detail-section" id="sec-steps" style="display:none"><div class="detail-section-title">作り方</div><div class="detail-note" id="d-steps"></div></div>
-<div class="detail-section" id="sec-recipe" style="display:none"><div class="detail-section-title">AIレシピ</div><div class="detail-recipe-box" id="d-recipe"></div></div>
-</div></div>
+<div id="view-form">
+  <div class="form-header">
+    <button class="form-back" id="btn-back2">&#8592;</button>
+    <span class="form-title" id="form-title">NEW DISH</span>
+  </div>
+  <div class="form-body">
+    <div class="form-section"><label class="form-label">料理名 *</label><input class="form-input" id="f-name" type="text"/></div>
+    <div class="form-row">
+      <div class="form-section"><label class="form-label">カテゴリ</label>
+        <select class="form-select" id="f-type">
+          <option value="自宅">自宅</option>
+          <option value="外食">外食</option>
+          <option value="作りたい">作りたい</option>
+        </select>
+      </div>
+      <div class="form-section"><label class="form-label">ジャンル</label>
+        <select class="form-select" id="f-genre">
+          <option value="和食">和食</option>
+          <option value="洋食">洋食</option>
+          <option value="中華">中華</option>
+          <option value="イタリアン">イタリアン</option>
+          <option value="アジア">アジア</option>
+          <option value="その他">その他</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-section">
+      <button class="special-toggle" id="special-toggle">
+        <span style="font-size:16px;">&#10022;</span>
+        <span class="special-label">Special</span>
+      </button>
+    </div>
+    <div class="form-section"><label class="form-label">メモ</label><textarea class="form-textarea" id="f-memo" rows="3"></textarea></div>
+    <div class="form-section">
+      <label class="form-label">写真</label>
+      <input type="file" id="f-photo-input" accept="image/*" style="display:none"/>
+      <button class="photo-btn" id="f-photo-btn">&#128247; 写真を追加</button>
+      <img class="photo-preview" id="f-photo-preview"/>
+    </div>
+    <div class="form-section"><label class="form-label">材料</label><textarea class="form-textarea" id="f-ingredients" rows="5"></textarea></div>
+    <div class="form-section"><label class="form-label">作り方</label><textarea class="form-textarea" id="f-steps" rows="5"></textarea></div>
+    <div class="form-section">
+      <button class="ai-btn" id="ai-btn">&#10022; AIでレシピを生成</button>
+      <div class="ai-result" id="ai-result"></div>
+    </div>
+    <button class="save-btn" id="save-btn">SAVE</button>
+    <button class="delete-btn" id="delete-btn" style="display:none">DELETE</button>
+  </div>
+</div>
+<div id="view-detail">
+  <div class="detail-hero" id="d-hero">
+    <img id="d-img" src="" alt=""/>
+    <div class="detail-hero-ov"></div>
+    <button class="detail-back" id="btn-back3">&#8592;</button>
+    <button class="detail-edit" id="btn-edit">EDIT</button>
+    <div class="detail-tag-wrap" id="d-tags"></div>
+  </div>
+  <div class="detail-body">
+    <div class="detail-name" id="d-name"></div>
+    <div class="detail-meta" id="d-meta"></div>
+    <div class="detail-section" id="sec-memo" style="display:none"><div class="detail-section-title">MEMO</div><div class="detail-note" id="d-memo"></div></div>
+    <div class="detail-section" id="sec-ing" style="display:none"><div class="detail-section-title">材料</div><div class="detail-note" id="d-ingredients"></div></div>
+    <div class="detail-section" id="sec-steps" style="display:none"><div class="detail-section-title">作り方</div><div class="detail-note" id="d-steps"></div></div>
+    <div class="detail-section" id="sec-recipe" style="display:none"><div class="detail-section-title">AIレシピ</div><div class="detail-recipe-box" id="d-recipe"></div></div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 <script>
-var DK="madoka_dishes_v2",dishes=[],eid=null,cf="all",cg="all",cs="new",isSp=false,pUrl=null;
-(function(){load();hero();render();bind();})();
-function load(){try{var r=localStorage.getItem(DK);dishes=r?JSON.parse(r):[];}catch(e){dishes=[];}}
-function save(){try{localStorage.setItem(DK,JSON.stringify(dishes));}catch(e){}}
-function hero(){var img=document.getElementById("hero-img");fetch("/api/hero").then(function(r){return r.json();}).then(function(d){if(d.image){img.src=d.image;img.style.display="block";}else{img.style.display="none";document.getElementById("hero").style.background="linear-gradient(160deg,#0f0f0f 0%,#1c1c1c 40%,#2a1a0a 70%,#1a1208 100%)"}}).catch(function(){img.style.display="none";document.getElementById("hero").style.background="linear-gradient(160deg,#0f0f0f 0%,#1c1c1c 40%,#2a1a0a 70%,#1a1208 100%)"});}
-function e(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
-function render(){var q=document.getElementById("search-input").value.toLowerCase(),list=dishes.filter(function(d){if(cf==="special"&&!d.special)return false;if(cf!=="all"&&cf!=="special"&&d.type!==cf)return false;if(cg!=="all"&&d.genre!==cg)return false;if(q&&d.name.toLowerCase().indexOf(q)<0&&(!d.memo||d.memo.toLowerCase().indexOf(q)<0))return false;return true;});if(cs==="name")list.sort(function(a,b){return a.name.localeCompare(b.name,"ja");});else list.sort(function(a,b){return b.id-a.id;});var el=document.getElementById("dish-list");if(!list.length){el.innerHTML="<div class='empty-state'>まだ料理がありません<br>+ ADD で追加してみましょう</div>";return;}el.innerHTML=list.map(function(d){var th=d.photo?"<img class='dish-thumb' src='"+e(d.photo)+"' alt=''/>":"<div class='dish-thumb-empty'>"+(d.special?"✦":"🍽")+"</div>",tg=d.special?"<span class='dish-tag special'>✦ Special</span>":"<span class='dish-tag'>"+e(d.type||"")+"</span>";return"<div class='dish-card' data-id='"+d.id+"'>"+th+"<div class='dish-info'><div class='dish-name'>"+e(d.name)+"</div><div class='dish-meta'>"+tg+(d.genre?"<span class='dish-tag'>"+e(d.genre)+"</span>":"")+"</div>"+(d.memo?"<div class='dish-note'>"+e(d.memo)+"</div>":"")+"</div></div>";}).join("");el.querySelectorAll(".dish-card").forEach(function(c){c.addEventListener("click",function(){det(parseInt(this.getAttribute("data-id")));});});}
-function openForm(id){eid=id||null;isSp=false;pUrl=null;document.getElementById("form-title").textContent=id?"EDIT DISH":"NEW DISH";["f-name","f-memo","f-ingredients","f-steps"].forEach(function(i){document.getElementById(i).value="";});document.getElementById("f-type").value="自宅";document.getElementById("f-genre").value="和食";document.getElementById("f-photo-preview").style.display="none";document.getElementById("ai-result").style.display="none";document.getElementById("ai-result").textContent="";document.getElementById("delete-btn").style.display=id?"block":"none";sp(false);if(id){var d=dishes.find(function(x){return x.id===id;});if(d){document.getElementById("f-name").value=d.name||"";document.getElementById("f-type").value=d.type||"自宅";document.getElementById("f-genre").value=d.genre||"和食";document.getElementById("f-memo").value=d.memo||"";document.getElementById("f-ingredients").value=(d.ingredients||[]).join("
-");document.getElementById("f-steps").value=(d.steps||[]).join("
-");isSp=!!d.special;pUrl=d.photo||null;if(d.photo){document.getElementById("f-photo-preview").src=d.photo;document.getElementById("f-photo-preview").style.display="block";}sp(isSp);if(d.aiRecipe){document.getElementById("ai-result").textContent=d.aiRecipe;document.getElementById("ai-result").style.display="block";}}}document.getElementById("view-home").style.display="none";document.getElementById("view-detail").style.display="none";document.getElementById("view-form").style.display="block";window.scrollTo(0,0);}
-function sp(v){isSp=v;document.getElementById("special-toggle").classList.toggle("on",v);}
-function saveD(){var name=document.getElementById("f-name").value.trim();if(!name){toast("料理名を入力してください");return;}var ai=document.getElementById("ai-result").textContent,now=Date.now();if(eid){dishes=dishes.map(function(d){if(d.id!==eid)return d;return{id:d.id,name:name,type:document.getElementById("f-type").value,genre:document.getElementById("f-genre").value,special:isSp,memo:document.getElementById("f-memo").value.trim(),ingredients:document.getElementById("f-ingredients").value.split("
-").map(function(s){return s.trim();}).filter(Boolean),steps:document.getElementById("f-steps").value.split("
-").map(function(s){return s.trim();}).filter(Boolean),photo:pUrl||d.photo||null,aiRecipe:ai||d.aiRecipe||""};});}else{dishes.push({id:now,name:name,type:document.getElementById("f-type").value,genre:document.getElementById("f-genre").value,special:isSp,memo:document.getElementById("f-memo").value.trim(),ingredients:document.getElementById("f-ingredients").value.split("
-").map(function(s){return s.trim();}).filter(Boolean),steps:document.getElementById("f-steps").value.split("
-").map(function(s){return s.trim();}).filter(Boolean),photo:pUrl||null,aiRecipe:ai||""});}save();home();toast(eid?"更新しました":"追加しました");}
-function delD(){if(!eid)return;if(!confirm("削除しますか？"))return;dishes=dishes.filter(function(d){return d.id!==eid;});save();home();toast("削除しました");}
-function det(id){var d=dishes.find(function(x){return x.id===id;});if(!d)return;eid=id;var dI=document.getElementById("d-img"),dH=document.getElementById("d-hero");if(d.photo){dI.src=d.photo;dI.style.display="block";}else{dI.style.display="none";dH.style.background="#111";}var tags="";if(d.special)tags+="<span class='detail-badge special'>✦ Special</span>";tags+="<span class='detail-badge'>"+e(d.type||"")+"</span>";if(d.genre)tags+="<span class='detail-badge'>"+e(d.genre)+"</span>";document.getElementById("d-tags").innerHTML=tags;document.getElementById("d-name").textContent=d.name;document.getElementById("d-meta").innerHTML="<span class='detail-meta-item'>"+new Date(d.id).toLocaleDateString("ja-JP")+"</span>";var ms=document.getElementById("sec-memo");if(d.memo){document.getElementById("d-memo").textContent=d.memo;ms.style.display="block";}else ms.style.display="none";var is=document.getElementById("sec-ing");if(d.ingredients&&d.ingredients.length){document.getElementById("d-ingredients").textContent=d.ingredients.map(function(s){return"• "+s;}).join("
-");is.style.display="block";}else is.style.display="none";var ss=document.getElementById("sec-steps");if(d.steps&&d.steps.length){document.getElementById("d-steps").textContent=d.steps.map(function(s,i){return(i+1)+". "+s;}).join("
-");ss.style.display="block";}else ss.style.display="none";var rs=document.getElementById("sec-recipe");if(d.aiRecipe){document.getElementById("d-recipe").textContent=d.aiRecipe;rs.style.display="block";}else rs.style.display="none";document.getElementById("view-home").style.display="none";document.getElementById("view-form").style.display="none";document.getElementById("view-detail").style.display="block";window.scrollTo(0,0);}
-function home(){document.getElementById("view-form").style.display="none";document.getElementById("view-detail").style.display="none";document.getElementById("view-home").style.display="block";eid=null;render();}
-function generateRecipe(){var name=document.getElementById("f-name").value.trim();if(!name){toast("料理名を入力してください");return;}var btn=document.getElementById("ai-btn"),re=document.getElementById("ai-result");btn.disabled=true;btn.textContent="生成中...";re.style.display="none";var ing=document.getElementById("f-ingredients").value.trim();fetch("/api/recipe",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({dishName:name+(ing?"(材料ヒント:"+ing+")":"")})}).then(function(r){return r.json();}).then(function(data){if(data.error)throw new Error(data.error);var text="";if(data.ingredients&&data.ingredients.length){text+="【材料（2人前）】
-"+data.ingredients.join("
-")+"
-
-";}if(data.steps&&data.steps.length){text+="【作り方】
-"+data.steps.map(function(s,i){return(i+1)+". "+s;}).join("
-");}if(!text)text=JSON.stringify(data,null,2);re.textContent=text;re.style.display="block";btn.disabled=false;btn.textContent="✦ AIでレシピを再生成";}).catch(function(e){re.textContent="エラー:"+e.message;re.style.display="block";btn.disabled=false;btn.textContent="✦ AIでレシピを生成";});}
-function changeHero(){var i=document.createElement("input");i.type="file";i.accept="image/*";i.onchange=function(ev){var f=ev.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev2){var u=ev2.target.result;fetch("/api/hero",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:u})}).then(function(){var img=document.getElementById("hero-img");img.src=u;img.style.display="block";toast("ヒーロー写真を更新しました");}).catch(function(er){toast("エラー:"+er.message);});};r.readAsDataURL(f);};i.click();}
-function bind(){document.getElementById("btn-add").addEventListener("click",function(){openForm(null);});document.getElementById("btn-back2").addEventListener("click",function(){eid?det(eid):home();});document.getElementById("btn-back3").addEventListener("click",home);document.getElementById("btn-edit").addEventListener("click",function(){openForm(eid);});document.getElementById("save-btn").addEventListener("click",saveD);document.getElementById("delete-btn").addEventListener("click",delD);document.getElementById("special-toggle").addEventListener("click",function(){sp(!isSp);});document.getElementById("f-photo-btn").addEventListener("click",function(){document.getElementById("f-photo-input").click();});document.getElementById("f-photo-input").addEventListener("change",function(ev){var f=ev.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev2){pUrl=ev2.target.result;var p=document.getElementById("f-photo-preview");p.src=pUrl;p.style.display="block";};r.readAsDataURL(f);});var ht;document.getElementById("hero").addEventListener("touchstart",function(){ht=setTimeout(changeHero,800);},{passive:true});document.getElementById("hero").addEventListener("touchend",function(){clearTimeout(ht);},{passive:true});document.getElementById("hero").addEventListener("dblclick",changeHero);document.getElementById("ai-btn").addEventListener("click",generateRecipe);document.getElementById("search-input").addEventListener("input",render);document.getElementById("filter-row").addEventListener("click",function(ev){var b=ev.target.closest(".fb");if(!b)return;document.querySelectorAll("#filter-row .fb").forEach(function(x){x.classList.remove("active");});b.classList.add("active");cf=b.getAttribute("data-f");render();});document.getElementById("genre-row").addEventListener("click",function(ev){var b=ev.target.closest(".fb");if(!b)return;document.querySelectorAll("#genre-row .fb").forEach(function(x){x.classList.remove("active");});b.classList.add("active");cg=b.getAttribute("data-g");render();});document.querySelector(".sort-bar").addEventListener("click",function(ev){var b=ev.target.closest(".sort-btn");if(!b)return;document.querySelectorAll(".sort-btn").forEach(function(x){x.classList.remove("active");});b.classList.add("active");cs=b.getAttribute("data-s");render();});}
-function toast(m){var t=document.getElementById("toast");t.textContent=m;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2500);}
-</script></div></body></html>
+var DK='madoka_dishes_v2',dishes=[],eid=null,cf='all',cg='all',cs='new',isSp=false,pUrl=null;
+(function(){load();heroLoad();render();bind();})();
+function load(){try{var r=localStorage.getItem(DK);dishes=r?JSON.parse(r):[];}catch(ex){dishes=[];}}
+function saveDishes(){try{localStorage.setItem(DK,JSON.stringify(dishes));}catch(ex){}}
+function heroLoad(){
+  var img=document.getElementById('hero-img');
+  fetch('/api/hero').then(function(r){return r.json();}).then(function(d){
+    if(d.image){img.src=d.image;img.style.display='block';}
+    else{img.style.display='none';document.getElementById('hero').style.background='linear-gradient(160deg,#0f0f0f 0%,#1c1c1c 40%,#2a1a0a 70%,#1a1208 100%)';}
+  }).catch(function(){
+    img.style.display='none';
+    document.getElementById('hero').style.background='linear-gradient(160deg,#0f0f0f 0%,#1c1c1c 40%,#2a1a0a 70%,#1a1208 100%)';
+  });
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function render(){
+  var q=document.getElementById('search-input').value.toLowerCase();
+  var list=dishes.filter(function(d){
+    if(cf==='special'&&!d.special)return false;
+    if(cf!=='all'&&cf!=='special'&&d.type!==cf)return false;
+    if(cg!=='all'&&d.genre!==cg)return false;
+    if(q&&d.name.toLowerCase().indexOf(q)<0&&(!d.memo||d.memo.toLowerCase().indexOf(q)<0))return false;
+    return true;
+  });
+  if(cs==='name')list.sort(function(a,b){return a.name.localeCompare(b.name,'ja');});
+  else list.sort(function(a,b){return b.id-a.id;});
+  var el=document.getElementById('dish-list');
+  if(!list.length){el.innerHTML='<div class="empty-state">まだ料理がありません<br>+ ADD で追加してみましょう</div>';return;}
+  el.innerHTML=list.map(function(d){
+    var th=d.photo?'<img class="dish-thumb" src="'+esc(d.photo)+'" alt=""/>':'<div class="dish-thumb-empty">'+(d.special?'✦':'🍽')+'</div>';
+    var tg=d.special?'<span class="dish-tag special">✦ Special</span>':'<span class="dish-tag">'+esc(d.type||'')+'</span>';
+    return '<div class="dish-card" data-id="'+d.id+'">'+th+'<div class="dish-info"><div class="dish-name">'+esc(d.name)+'</div><div class="dish-meta">'+tg+(d.genre?'<span class="dish-tag">'+esc(d.genre)+'</span>':'')+'</div>'+(d.memo?'<div class="dish-note">'+esc(d.memo)+'</div>':'')+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.dish-card').forEach(function(c){
+    c.addEventListener('click',function(){det(parseInt(this.getAttribute('data-id')));});
+  });
+}
+function openForm(id){
+  eid=id||null;isSp=false;pUrl=null;
+  document.getElementById('form-title').textContent=id?'EDIT DISH':'NEW DISH';
+  ['f-name','f-memo','f-ingredients','f-steps'].forEach(function(i){document.getElementById(i).value='';});
+  document.getElementById('f-type').value='自宅';
+  document.getElementById('f-genre').value='和食';
+  document.getElementById('f-photo-preview').style.display='none';
+  document.getElementById('ai-result').style.display='none';
+  document.getElementById('ai-result').textContent='';
+  document.getElementById('delete-btn').style.display=id?'block':'none';
+  spToggle(false);
+  if(id){
+    var d=dishes.find(function(x){return x.id===id;});
+    if(d){
+      document.getElementById('f-name').value=d.name||'';
+      document.getElementById('f-type').value=d.type||'自宅';
+      document.getElementById('f-genre').value=d.genre||'和食';
+      document.getElementById('f-memo').value=d.memo||'';
+      document.getElementById('f-ingredients').value=(d.ingredients||[]).join('\n');
+      document.getElementById('f-steps').value=(d.steps||[]).join('\n');
+      isSp=!!d.special;pUrl=d.photo||null;
+      if(d.photo){document.getElementById('f-photo-preview').src=d.photo;document.getElementById('f-photo-preview').style.display='block';}
+      spToggle(isSp);
+      if(d.aiRecipe){document.getElementById('ai-result').textContent=d.aiRecipe;document.getElementById('ai-result').style.display='block';}
+    }
+  }
+  document.getElementById('view-home').style.display='none';
+  document.getElementById('view-detail').style.display='none';
+  document.getElementById('view-form').style.display='block';
+  window.scrollTo(0,0);
+}
+function spToggle(v){isSp=v;document.getElementById('special-toggle').classList.toggle('on',v);}
+function saveD(){
+  var name=document.getElementById('f-name').value.trim();
+  if(!name){showToast('料理名を入力してください');return;}
+  var ai=document.getElementById('ai-result').textContent,now=Date.now();
+  if(eid){
+    dishes=dishes.map(function(d){
+      if(d.id!==eid)return d;
+      return{id:d.id,name:name,type:document.getElementById('f-type').value,genre:document.getElementById('f-genre').value,special:isSp,memo:document.getElementById('f-memo').value.trim(),ingredients:document.getElementById('f-ingredients').value.split('\n').map(function(s){return s.trim();}).filter(Boolean),steps:document.getElementById('f-steps').value.split('\n').map(function(s){return s.trim();}).filter(Boolean),photo:pUrl||d.photo||null,aiRecipe:ai||d.aiRecipe||''};
+    });
+  }else{
+    dishes.push({id:now,name:name,type:document.getElementById('f-type').value,genre:document.getElementById('f-genre').value,special:isSp,memo:document.getElementById('f-memo').value.trim(),ingredients:document.getElementById('f-ingredients').value.split('\n').map(function(s){return s.trim();}).filter(Boolean),steps:document.getElementById('f-steps').value.split('\n').map(function(s){return s.trim();}).filter(Boolean),photo:pUrl||null,aiRecipe:ai||''});
+  }
+  saveDishes();home();showToast(eid?'更新しました':'追加しました');
+}
+function delD(){
+  if(!eid)return;
+  if(!confirm('削除しますか？'))return;
+  dishes=dishes.filter(function(d){return d.id!==eid;});
+  saveDishes();home();showToast('削除しました');
+}
+function det(id){
+  var d=dishes.find(function(x){return x.id===id;});if(!d)return;eid=id;
+  var dI=document.getElementById('d-img'),dH=document.getElementById('d-hero');
+  if(d.photo){dI.src=d.photo;dI.style.display='block';}else{dI.style.display='none';dH.style.background='#111';}
+  var tags='';
+  if(d.special)tags+='<span class="detail-badge special">✦ Special</span>';
+  tags+='<span class="detail-badge">'+esc(d.type||'')+'</span>';
+  if(d.genre)tags+='<span class="detail-badge">'+esc(d.genre)+'</span>';
+  document.getElementById('d-tags').innerHTML=tags;
+  document.getElementById('d-name').textContent=d.name;
+  document.getElementById('d-meta').innerHTML='<span class="detail-meta-item">'+new Date(d.id).toLocaleDateString('ja-JP')+'</span>';
+  var ms=document.getElementById('sec-memo');
+  if(d.memo){document.getElementById('d-memo').textContent=d.memo;ms.style.display='block';}else ms.style.display='none';
+  var is=document.getElementById('sec-ing');
+  if(d.ingredients&&d.ingredients.length){document.getElementById('d-ingredients').textContent=d.ingredients.map(function(s){return'• '+s;}).join('\n');is.style.display='block';}else is.style.display='none';
+  var ss=document.getElementById('sec-steps');
+  if(d.steps&&d.steps.length){document.getElementById('d-steps').textContent=d.steps.map(function(s,i){return(i+1)+'. '+s;}).join('\n');ss.style.display='block';}else ss.style.display='none';
+  var rs=document.getElementById('sec-recipe');
+  if(d.aiRecipe){document.getElementById('d-recipe').textContent=d.aiRecipe;rs.style.display='block';}else rs.style.display='none';
+  document.getElementById('view-home').style.display='none';
+  document.getElementById('view-form').style.display='none';
+  document.getElementById('view-detail').style.display='block';
+  window.scrollTo(0,0);
+}
+function home(){
+  document.getElementById('view-form').style.display='none';
+  document.getElementById('view-detail').style.display='none';
+  document.getElementById('view-home').style.display='block';
+  eid=null;render();
+}
+function generateRecipe(){
+  var name=document.getElementById('f-name').value.trim();
+  if(!name){showToast('料理名を入力してください');return;}
+  var btn=document.getElementById('ai-btn'),re=document.getElementById('ai-result');
+  btn.disabled=true;btn.textContent='生成中...';re.style.display='none';
+  var ing=document.getElementById('f-ingredients').value.trim();
+  fetch('/api/recipe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({dishName:name+(ing?'(材料ヒント:'+ing+')':'')})})
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if(data.error)throw new Error(data.error);
+    var text='';
+    if(data.ingredients&&data.ingredients.length){text+='【材料（2人前）】\n'+data.ingredients.join('\n')+'\n\n';}
+    if(data.steps&&data.steps.length){text+='【作り方】\n'+data.steps.map(function(s,i){return(i+1)+'. '+s;}).join('\n');}
+    if(!text)text=JSON.stringify(data,null,2);
+    re.textContent=text;re.style.display='block';
+    btn.disabled=false;btn.textContent='✦ AIでレシピを再生成';
+  }).catch(function(ex){
+    re.textContent='エラー:'+ex.message;re.style.display='block';
+    btn.disabled=false;btn.textContent='✦ AIでレシピを生成';
+  });
+}
+function changeHero(){
+  var i=document.createElement('input');i.type='file';i.accept='image/*';
+  i.onchange=function(ev){
+    var f=ev.target.files[0];if(!f)return;
+    var r=new FileReader();
+    r.onload=function(ev2){
+      var u=ev2.target.result;
+      fetch('/api/hero',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:u})})
+      .then(function(){
+        var img=document.getElementById('hero-img');img.src=u;img.style.display='block';
+        showToast('ヒーロー写真を更新しました');
+      }).catch(function(ex){showToast('エラー:'+ex.message);});
+    };
+    r.readAsDataURL(f);
+  };
+  i.click();
+}
+function bind(){
+  document.getElementById('btn-add').addEventListener('click',function(){openForm(null);});
+  document.getElementById('btn-back2').addEventListener('click',function(){eid?det(eid):home();});
+  document.getElementById('btn-back3').addEventListener('click',home);
+  document.getElementById('btn-edit').addEventListener('click',function(){openForm(eid);});
+  document.getElementById('save-btn').addEventListener('click',saveD);
+  document.getElementById('delete-btn').addEventListener('click',delD);
+  document.getElementById('special-toggle').addEventListener('click',function(){spToggle(!isSp);});
+  document.getElementById('f-photo-btn').addEventListener('click',function(){document.getElementById('f-photo-input').click();});
+  document.getElementById('f-photo-input').addEventListener('change',function(ev){
+    var f=ev.target.files[0];if(!f)return;
+    var r=new FileReader();
+    r.onload=function(ev2){pUrl=ev2.target.result;var p=document.getElementById('f-photo-preview');p.src=pUrl;p.style.display='block';};
+    r.readAsDataURL(f);
+  });
+  var ht;
+  document.getElementById('hero').addEventListener('touchstart',function(){ht=setTimeout(changeHero,800);},{passive:true});
+  document.getElementById('hero').addEventListener('touchend',function(){clearTimeout(ht);},{passive:true});
+  document.getElementById('hero').addEventListener('dblclick',changeHero);
+  document.getElementById('ai-btn').addEventListener('click',generateRecipe);
+  document.getElementById('search-input').addEventListener('input',render);
+  document.getElementById('filter-row').addEventListener('click',function(ev){
+    var b=ev.target.closest('.fb');if(!b)return;
+    document.querySelectorAll('#filter-row .fb').forEach(function(x){x.classList.remove('active');});
+    b.classList.add('active');cf=b.getAttribute('data-f');render();
+  });
+  document.getElementById('genre-row').addEventListener('click',function(ev){
+    var b=ev.target.closest('.fb');if(!b)return;
+    document.querySelectorAll('#genre-row .fb').forEach(function(x){x.classList.remove('active');});
+    b.classList.add('active');cg=b.getAttribute('data-g');render();
+  });
+  document.querySelector('.sort-bar').addEventListener('click',function(ev){
+    var b=ev.target.closest('.sort-btn');if(!b)return;
+    document.querySelectorAll('.sort-btn').forEach(function(x){x.classList.remove('active');});
+    b.classList.add('active');cs=b.getAttribute('data-s');render();
+  });
+}
+function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+</script>
+</div>
+</body>
+</html>
