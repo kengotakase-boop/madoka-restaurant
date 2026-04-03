@@ -130,7 +130,7 @@ button,input,select,textarea{font-family:inherit;}
   </div>
   <div class="form-body">
     <div class="form-section">
-      <label class="form-label">料理名</label>
+      <label class="form-label">料理倍</label>
       <input class="form-input" id="fName" type="text" placeholder="例: 肉じゃが"/>
     </div>
     <div class="form-row">
@@ -170,7 +170,7 @@ button,input,select,textarea{font-family:inherit;}
     </div>
     <div class="form-section">
       <label class="form-label">メモ</label>
-      <textarea class="form-textarea" id="fNote" placeholder="味の印象、なすこの料理など..."></textarea>
+      <textarea class="form-textarea" id="fNote" placeholder="味の印象、なぜこの料理など..."></textarea>
     </div>
     <div class="form-section">
       <label class="form-label">写真</label>
@@ -430,7 +430,7 @@ function updateWantUI() {
   var label = document.getElementById('wantLabel');
   t.className = 'want-toggle' + (isWant?' on':'');
   icon.textContent = isWant ? '\u25bc' : '\u25b3';
-  label.textContent = isWant ? '\u4f5c\u308a\u305f\u3044\u30ea\u30b9\u30c8\u304b\u3089\u524a\u9664' : '\u4f5c\u308a\u305f\u3044\u30ea\u30b9\u30c8\u306b\u8ffd\u52a0';
+  label.textContent = isWant ? '\u4f5c\u308a\u305f\u3044\u30ea\u30b9\u30c8\u304b\u3089\u524a\u9664' : '\u4f5c\u308a\u305f\u3041\u30ea\u30b9\u30c8\u306b\u8ffd\u52a0';
 }
 
 function onPhotoChange() {
@@ -595,3 +595,6 @@ function showToast(msg) {
   t.className = 'toast show';
   setTimeout(function(){ t.className = 'toast'; }, 2000);
 }
+</script>
+</body>
+</html>
