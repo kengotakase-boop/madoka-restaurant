@@ -8,7 +8,7 @@ const HERO_PATH = path.join(DATA_DIR, 'hero.txt');
 const DISHES_PATH = path.join(DATA_DIR, 'dishes.json');
 
 app.use(express.json({limit: '50mb'}));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
 
 // GET /api/dishes
 app.get('/api/dishes', (req, res) => {
@@ -49,7 +49,7 @@ app.get('/api/hero', (req, res) => {
   }
 });
 
-// POST /api/hero
+// POST /api/hero (image=null or empty resets hero)
 app.post('/api/hero', (req, res) => {
   const { image } = req.body;
   if (!image) {
@@ -73,10 +73,11 @@ app.post('/api/recipe', async (req, res) => {
     const https = require('https');
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) return res.status(500).json({error: 'No API key'});
+    const prompt = dishName + ' \u306e\u30ec\u30b7\u30d4\u3092JSON\u5f62\u5f0f\u3067\u8fd4\u3057\u3066\u304f\u3060\u3055\u3044\u3002\u5f62\u5f0f: {"ingredients":["..."],"steps":["..."]}';
     const body = JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 1024,
-      messages: [{role: 'user', content: `${dishName}\u306e\u30ec\u30b7\u30d4\u3092JSON\u5f62\u5f0f\u3067\u8fd4\u3057\u3066\u304f\u3060\u3055\u3044\u3002\u5f62\u5f0f: {"ingredients":["..."],"steps":["..."]}`}]
+      messages: [{role: 'user', content: prompt}]
     });
     const options = {
       hostname: 'api.anthropic.com',
@@ -112,7 +113,7 @@ app.post('/api/recipe', async (req, res) => {
 
 // SPA fallback
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
