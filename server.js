@@ -30,6 +30,15 @@ app.get('/api/hero', (req, res) => {
 app.post('/api/hero', (req, res) => {
   const { image } = req.body;
   if (!image) return res.status(400).json({ error: 'No image data' });
+
+app.delete('/api/hero', (req, res) => {
+  try {
+    if (fs.existsSync(HERO_PATH)) fs.unlinkSync(HERO_PATH);
+    res.json({ok: true});
+  } catch(e) {
+    res.status(500).json({error: e.message});
+  }
+});
   try {
     fs.writeFileSync(HERO_PATH, image, 'utf8');
     res.json({ ok: true });
