@@ -29,7 +29,18 @@ app.get('/api/hero', (req, res) => {
 
 app.post('/api/hero', (req, res) => {
   const { image } = req.body;
-  if (!image) return res.status(400).json({ error: 'No image data' });
+  if (!image) {
+    try { if (fs.existsSync(HERO_PATH)) fs.unlinkSync(HERO_PATH); } catch(e) {}
+    return res.json({ok: true, reset: true});
+  }
+  try {
+    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, {recursive: true});
+    fs.writeFileSync(HERO_PATH, image);
+    res.json({ok: true});
+  } catch(e) {
+    res.status(500).json({error: e.message});
+  }
+});
 
 app.delete('/api/hero', (req, res) => {
   try {
