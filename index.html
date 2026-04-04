@@ -255,35 +255,7 @@ async function dishesSave() {
   try {
     await fetch('/api/dishes', {
       method: 'POST',
-      headers: {'Conte
-
-function heroTap(e) {
-  if (e.target.closest('button') || e.target.closest('input')) return;
-  document.getElementById('heroInput').click();
-}
-
-function onHeroChange() {
-  var file = document.getElementById('heroInput').files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = async function(e) {
-    var img = document.getElementById('heroImg');
-    img.src = e.target.result;
-    img.style.display = 'block';
-    heroImage = e.target.result;
-    try {
-      await fetch('/api/hero', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({image: e.target.result})
-      });
-      showToast('\u80cc\u666f\u5199\u771f\u3092\u4fdd\u5b58\u3057\u307e\u3057\u305f\u2713');
-    } catch(err) {
-      showToast('\u4fdd\u5b58\u306b\u5931\u6557\u3057\u307e\u3057\u305f');
-    }
-  };
-  reader.readAsDataURL(file);
-}nt-Type':'application/json'},
+      headers: {'Content-Type':'application/json'},
       body: JSON.stringify(dishes)
     });
   } catch(e) {
@@ -303,6 +275,34 @@ async function heroLoad() {
       img.style.display = 'block';
     }
   } catch(e) {}
+}
+
+function heroTap(e) {
+  if (e.target.closest('button') || e.target.closest('input')) return;
+  document.getElementById('heroInput').click();
+}
+
+function onHeroChange() {
+  var file = document.getElementById('heroInput').files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = async function(ev) {
+    var img = document.getElementById('heroImg');
+    img.src = ev.target.result;
+    img.style.display = 'block';
+    heroImage = ev.target.result;
+    try {
+      await fetch('/api/hero', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({image: ev.target.result})
+      });
+      showToast('\u80cc\u666f\u5199\u771f\u3092\u4fdd\u5b58\u2713');
+    } catch(err) {
+      showToast('\u4fdd\u5b58\u306b\u5931\u6557\u3057\u307e\u3057\u305f');
+    }
+  };
+  reader.readAsDataURL(file);
 }
 
 // ===== Init =====
