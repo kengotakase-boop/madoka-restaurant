@@ -92,7 +92,7 @@ button,input,select,textarea{font-family:inherit;}
 .share-row{display:flex;gap:8px;margin-top:16px;}
 .share-btn{flex:1;padding:12px 8px;border:1px solid #ddd;background:#fff;font-size:11px;color:#555;cursor:pointer;text-align:center;}
 .share-btn.line{border-color:#06C755;color:#06C755;}
-.share-btn.x{border-color:#000;color:#000;}
+
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:12px 24px;font-size:12px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;}
 .toast.show{opacity:1;}
 </style>
@@ -215,7 +215,6 @@ button,input,select,textarea{font-family:inherit;}
     </div>
     <div class="share-row">
       <button class="share-btn line" onclick="shareToLine()">💬 LINE</button>
-      <button class="share-btn x" onclick="shareToX()">&#10005; X</button>
       <button class="share-btn" onclick="copyShare()">📋 コピー</button>
     </div>
   </div>
@@ -236,7 +235,7 @@ var currentSort = 'new';
 var currentFilter = 'all';
 var heroImage = null;
 
-var CATS = ['\u548c\u98df','\u6d0b\u98df','\u4e2d\u83ef','\u30a4\u30bf\u30ea\u30a2\u30f3','\u305d\u306e\u4ed6'];
+var CATS = ['\u548c\u98df','\u6d0b\u98df','\u4e2d\u83ef','\u30a4\u30bf\u30ea\u30a2\u30f3','\u30a2\u30b8\u30a2','\u305d\u306e\u4ed6'];
 
 // ===== Server Storage =====
 async function dishesLoad() {
@@ -601,23 +600,22 @@ function editCurrent() {
 }
 
 // ===== Share =====
-function shareText() {
-  if (!currentDish) return '';
-  var t = 'madoka Restaurant\n\u300c'+currentDish.name+'\u300d';
-  if (currentDish.special) t += ' \u2605Special';
-  if (currentDish.note) t += '\n\n'+currentDish.note;
-  return t;
-}
-function shareToLine() {
-  var url = 'https://line.me/R/msg/text/?'+encodeURIComponent(shareText());
+function shareUrl(){return window.location.href;}
+function shareToLine(){
+  var url='https://line.me/R/msg/text/?'+encodeURIComponent(shareUrl());
   window.open(url,'_blank');
 }
-function shareToX() {
-  var url = 'https://twitter.com/intent/tweet?text='+encodeURIComponent(shareText());
-  window.open(url,'_blank');
+function copyShare(){
+  var url=shareUrl();
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(function(){showToast('\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f');}).catch(function(){fallbackCopy(url);});
+  }else{fallbackCopy(url);}
 }
-function copyShare() {
-  navigator.clipboard.writeText(shareText()).then(function(){ showToast('\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f'); }).catch(function(){ showToast('\u30b3\u30d4\u30fc\u306b\u5931\u6557\u3057\u307e\u3057\u305f'); });
+function fallbackCopy(text){
+  var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.focus();ta.select();
+  try{document.execCommand('copy');showToast('\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f');}catch(e){showToast('\u30b3\u30d4\u30fc\u306b\u5931\u6557\u3057\u307e\u3057\u305f');}
+  document.body.removeChild(ta);
 }
 
 // ===== Toast =====
