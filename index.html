@@ -600,16 +600,22 @@ function editCurrent() {
 }
 
 // ===== Share =====
-function shareUrl(){return window.location.href;}
+function shareText(){
+  if(!currentDish)return'';
+  var t='\u300cmadoka Restaurant\u300d\n'+currentDish.name;
+  if(currentDish.special)t+=' \u2605';
+  if(currentDish.note)t+='\n'+currentDish.note;
+  return t;
+}
 function shareToLine(){
-  var url='https://line.me/R/msg/text/?'+encodeURIComponent(shareUrl());
+  var url='https://line.me/R/msg/text/?'+encodeURIComponent(shareText());
   window.open(url,'_blank');
 }
 function copyShare(){
-  var url=shareUrl();
+  var text=shareText();
   if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(url).then(function(){showToast('\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f');}).catch(function(){fallbackCopy(url);});
-  }else{fallbackCopy(url);}
+    navigator.clipboard.writeText(text).then(function(){showToast('\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f');}).catch(function(){fallbackCopy(text);});
+  }else{fallbackCopy(text);}
 }
 function fallbackCopy(text){
   var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
