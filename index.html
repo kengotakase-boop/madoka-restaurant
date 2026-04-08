@@ -89,9 +89,9 @@ button,input,select,textarea{font-family:inherit;}
 .detail-section-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#aaa;margin-bottom:10px;}
 .detail-note{font-size:13px;color:#555;line-height:1.7;white-space:pre-wrap;}
 .detail-recipe-box{background:#f9f9f9;border:1px solid #eee;padding:16px;font-size:12px;color:#555;line-height:1.8;white-space:pre-wrap;}
-.share-row{display:flex;gap:8px;margin-top:16px;}
-.share-btn{flex:1;padding:12px 8px;border:1px solid #ddd;background:#fff;font-size:11px;color:#555;cursor:pointer;text-align:center;}
-.share-btn.line{border-color:#06C755;color:#06C755;}
+
+
+
 
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:12px 24px;font-size:12px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;}
 .toast.show{opacity:1;}
@@ -144,6 +144,7 @@ button,input,select,textarea{font-family:inherit;}
           <option value="洋食">洋食</option>
           <option value="中華">中華</option>
           <option value="イタリアン">イタリアン</option>
+          <option value="アジア">アジア</option>
           <option value="その他">その他</option>
         </select>
       </div>
@@ -212,10 +213,6 @@ button,input,select,textarea{font-family:inherit;}
     <div class="detail-section" id="detailRecipeSection" style="display:none">
       <div class="detail-section-title">RECIPE</div>
       <div class="detail-recipe-box" id="detailRecipe"></div>
-    </div>
-    <div class="share-row">
-      <button class="share-btn line" onclick="shareToLine()">💬 LINE</button>
-      <button class="share-btn" onclick="copyShare()">📋 コピー</button>
     </div>
   </div>
 </div>
@@ -600,31 +597,6 @@ function editCurrent() {
 }
 
 // ===== Share =====
-function shareText(){
-  if(!currentDish)return'';
-  var t='\u300cmadoka Restaurant\u300d\n'+currentDish.name;
-  if(currentDish.special)t+=' \u2605';
-  if(currentDish.note)t+='\n'+currentDish.note;
-  return t;
-}
-function shareToLine(){
-  var url='https://line.me/R/msg/text/?'+encodeURIComponent(shareText());
-  window.open(url,'_blank');
-}
-function copyShare(){
-  var text=shareText();
-  if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(function(){showToast('\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f');}).catch(function(){fallbackCopy(text);});
-  }else{fallbackCopy(text);}
-}
-function fallbackCopy(text){
-  var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
-  document.body.appendChild(ta);ta.focus();ta.select();
-  try{document.execCommand('copy');showToast('\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f');}catch(e){showToast('\u30b3\u30d4\u30fc\u306b\u5931\u6557\u3057\u307e\u3057\u305f');}
-  document.body.removeChild(ta);
-}
-
-// ===== Toast =====
 function showToast(msg) {
   var t = document.getElementById('toast');
   t.textContent = msg;
