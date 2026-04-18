@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import AuthGuard from "@/components/AuthGuard";
 import DishImage from "@/components/DishImage";
-import { useAuth } from "@/hooks/useAuth";
 import { getDishById } from "@/lib/dishes";
 import { genreLabel } from "@/constants/genre";
 import { IMAGES_ENABLED } from "@/config/features";
@@ -24,12 +23,10 @@ function formatDateTime(ts: Dish["cookedAt"] | null): string {
 }
 
 function Content({ id }: { id: string }) {
-  const { user } = useAuth();
   const [dish, setDish] = useState<Dish | null | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user) return;
     let mounted = true;
     (async () => {
       try {
@@ -43,7 +40,7 @@ function Content({ id }: { id: string }) {
     return () => {
       mounted = false;
     };
-  }, [id, user]);
+  }, [id]);
 
   if (error) {
     return <main className="min-h-screen p-8 text-red-600">{error}</main>;
@@ -55,8 +52,6 @@ function Content({ id }: { id: string }) {
     return <main className="min-h-screen p-8">料理が見つかりません</main>;
   }
 
-  const isOwner = dish.ownerUid === user?.uid;
-
   return (
     <main className="min-h-screen p-8">
       <div className="max-w-xl mx-auto">
@@ -64,14 +59,12 @@ function Content({ id }: { id: string }) {
           <Link href="/" className="text-sm text-blue-600 hover:underline">
             ← 一覧へ
           </Link>
-          {isOwner && (
-            <Link
-              href={`/dish/${dish.id}/edit`}
-              className="text-sm text-blue-600 hover:underline"
-            >
-              編集
-            </Link>
-          )}
+          <Link
+            href={`/dish/${dish.id}/edit`}
+            className="text-sm text-blue-600 hover:underline"
+          >
+            編集
+          </Link>
         </div>
         <h1 className="text-2xl font-bold mb-4">
           {dish.name}

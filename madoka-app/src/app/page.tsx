@@ -170,15 +170,6 @@ function HomeContent() {
                         </p>
                       )}
                       <div className="flex items-center gap-2 text-[11px] text-gray-400">
-                        <span className="truncate">
-                          {d.ownerName ??
-                            (d.ownerUid === user?.uid
-                              ? (user?.displayName ?? user?.email ?? "ゲスト")
-                              : "家族")}
-                        </span>
-                        <span aria-hidden className="text-gray-300">
-                          ·
-                        </span>
                         <span className="flex-shrink-0">{genreLabel(d.genre)}</span>
                         <span aria-hidden className="text-gray-300">
                           ·

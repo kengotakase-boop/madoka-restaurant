@@ -69,13 +69,9 @@ function Content({ id }: { id: string }) {
   if (dish === null) {
     return <main className="min-h-screen p-8">料理が見つかりません</main>;
   }
-  if (dish.ownerUid !== user?.uid) {
-    return <main className="min-h-screen p-8">編集権限がありません</main>;
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
     setSaving(true);
     try {
       const cookedDate = cookedAt ? new Date(cookedAt) : new Date();
@@ -88,7 +84,7 @@ function Content({ id }: { id: string }) {
       });
       if (IMAGES_ENABLED && file) {
         try {
-          const imagePath = await uploadDishImage(file, user.uid, id);
+          const imagePath = await uploadDishImage(file, "shared", id);
           await updateDishImagePath(id, imagePath);
         } catch (upErr) {
           console.error(upErr);

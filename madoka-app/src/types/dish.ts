@@ -11,8 +11,6 @@ export type Dish = {
   aiOriginal: string | null;
   cookedAt: Timestamp;
   yearMonth: string;
-  ownerUid: string;
-  ownerName?: string;
   createdAt: Timestamp | null;
   updatedAt: Timestamp | null;
   imagePath: string;

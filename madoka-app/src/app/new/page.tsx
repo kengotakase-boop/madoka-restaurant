@@ -2,8 +2,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import AuthGuard from "@/components/AuthGuard";
-import { useAuth } from "@/hooks/useAuth";
 import { createDish, updateDishImagePath } from "@/lib/dishes";
 import { uploadDishImage } from "@/lib/storage";
 import {
@@ -19,8 +17,7 @@ type GenerateResponse = {
   note: string;
 };
 
-function NewContent() {
-  const { user } = useAuth();
+export default function NewPage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [genre, setGenre] = useState<GenreId>("washoku");
@@ -70,7 +67,6 @@ function NewContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
     setSaving(true);
     try {
       const cookedDate = cookedAt ? new Date(cookedAt) : new Date();
@@ -80,8 +76,6 @@ function NewContent() {
         note: note.trim(),
         isSpecial,
         cookedAt: cookedDate,
-        ownerUid: user.uid,
-        ownerName: user.displayName ?? user.email ?? "ゲスト",
         ingredients,
         steps,
         isAiGenerated,
@@ -89,7 +83,7 @@ function NewContent() {
       });
       if (IMAGES_ENABLED && file) {
         try {
-          const imagePath = await uploadDishImage(file, user.uid, id);
+          const imagePath = await uploadDishImage(file, "shared", id);
           await updateDishImagePath(id, imagePath);
         } catch (upErr) {
           console.error(upErr);
@@ -248,10 +242,3 @@ function NewContent() {
   );
 }
 
-export default function NewPage() {
-  return (
-    <AuthGuard>
-      <NewContent />
-    </AuthGuard>
-  );
-}
