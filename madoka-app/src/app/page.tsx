@@ -6,7 +6,7 @@ import DishImage from "@/components/DishImage";
 import { useAuth } from "@/hooks/useAuth";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
-import { getDishesByOwner } from "@/lib/dishes";
+import { getAllDishes } from "@/lib/dishes";
 import { genreLabel } from "@/constants/genre";
 import { IMAGES_ENABLED } from "@/config/features";
 import type { Dish } from "@/types/dish";
@@ -33,7 +33,7 @@ function HomeContent() {
     let mounted = true;
     (async () => {
       try {
-        const list = await getDishesByOwner(user.uid);
+        const list = await getAllDishes();
         if (mounted) setDishes(list);
       } catch (e) {
         console.error(e);

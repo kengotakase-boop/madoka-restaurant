@@ -54,9 +54,8 @@ function Content({ id }: { id: string }) {
   if (dish === null) {
     return <main className="min-h-screen p-8">料理が見つかりません</main>;
   }
-  if (dish.ownerUid !== user?.uid) {
-    return <main className="min-h-screen p-8">表示権限がありません</main>;
-  }
+
+  const isOwner = dish.ownerUid === user?.uid;
 
   return (
     <main className="min-h-screen p-8">
@@ -65,12 +64,14 @@ function Content({ id }: { id: string }) {
           <Link href="/" className="text-sm text-blue-600 hover:underline">
             ← 一覧へ
           </Link>
-          <Link
-            href={`/dish/${dish.id}/edit`}
-            className="text-sm text-blue-600 hover:underline"
-          >
-            編集
-          </Link>
+          {isOwner && (
+            <Link
+              href={`/dish/${dish.id}/edit`}
+              className="text-sm text-blue-600 hover:underline"
+            >
+              編集
+            </Link>
+          )}
         </div>
         <h1 className="text-2xl font-bold mb-4">
           {dish.name}

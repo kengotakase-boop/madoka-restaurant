@@ -15,9 +15,10 @@ service cloud.firestore {
     }
 
     match /dishes/{dishId} {
-      allow read: if isFamily()
-                  && resource.data.ownerUid == request.auth.uid;
+      // 家族共有: 家族メンバーなら全員分を閲覧可
+      allow read: if isFamily();
 
+      // 作成・更新は本人のみ（ownerUid の書き換えは不可）
       allow create: if isFamily()
                     && request.resource.data.ownerUid == request.auth.uid;
 

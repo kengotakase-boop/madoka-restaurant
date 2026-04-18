@@ -5,8 +5,6 @@ import {
   getDoc,
   getDocs,
   updateDoc,
-  query,
-  where,
   Timestamp,
   serverTimestamp,
 } from "firebase/firestore";
@@ -64,9 +62,8 @@ export async function createDish(input: CreateDishInput): Promise<string> {
   return ref.id;
 }
 
-export async function getDishesByOwner(ownerUid: string): Promise<Dish[]> {
-  const q = query(dishesCol(), where("ownerUid", "==", ownerUid));
-  const snap = await getDocs(q);
+export async function getAllDishes(): Promise<Dish[]> {
+  const snap = await getDocs(dishesCol());
   const list = snap.docs.map((d) => normalize(d.id, d.data() as DishRaw));
   return list.sort((a, b) => {
     const aMs = a.cookedAt?.toMillis?.() ?? 0;
