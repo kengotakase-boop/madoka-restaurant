@@ -93,11 +93,11 @@ function Content({ id }: { id: string }) {
           />
         )}
 
-        <section className="mb-10">
+        <section className="mb-12">
           <h2 className="text-[10px] tracking-[0.25em] text-gray-400 uppercase mb-3">
             メモ
           </h2>
-          <p className="text-[15px] leading-[1.8] text-gray-800 whitespace-pre-wrap">
+          <p className="text-[15.5px] md:text-base leading-[1.9] text-gray-800 whitespace-pre-wrap">
             {dish.note || (
               <span className="text-gray-400">(未設定)</span>
             )}
@@ -109,7 +109,7 @@ function Content({ id }: { id: string }) {
             <h2 className="text-[10px] tracking-[0.25em] text-gray-400 uppercase mb-3">
               材料
             </h2>
-            <ul className="list-disc list-inside space-y-1.5 text-[14px] text-gray-800 leading-relaxed">
+            <ul className="list-disc list-inside space-y-1.5 text-[13.5px] text-gray-600 leading-relaxed">
               {dish.ingredients.map((v, i) => (
                 <li key={i}>{v}</li>
               ))}
@@ -122,7 +122,7 @@ function Content({ id }: { id: string }) {
             <h2 className="text-[10px] tracking-[0.25em] text-gray-400 uppercase mb-3">
               手順
             </h2>
-            <ol className="list-decimal list-inside space-y-2 text-[14px] text-gray-800 leading-[1.75]">
+            <ol className="list-decimal list-inside space-y-2 text-[13.5px] text-gray-600 leading-[1.8]">
               {dish.steps.map((v, i) => (
                 <li key={i}>{v}</li>
               ))}

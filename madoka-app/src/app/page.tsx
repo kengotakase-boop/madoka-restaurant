@@ -72,7 +72,7 @@ function HomeContent() {
           <div aria-hidden className="mt-5 mb-8 h-[2px] w-8 bg-[#C9A84C]" />
           <Link
             href="/new"
-            className="block w-full text-center px-6 py-[18px] bg-gray-900 text-white text-[15px] font-medium tracking-[0.18em] rounded-sm shadow-sm hover:bg-black hover:shadow-md active:shadow-sm transition"
+            className="block w-full text-center px-6 py-[18px] bg-gray-900 text-white text-[15px] font-medium tracking-[0.18em] rounded-sm shadow-sm hover:bg-black hover:shadow-[0_14px_30px_-12px_rgba(201,168,76,0.35)] hover:-translate-y-[1px] active:translate-y-0 active:shadow-sm transition-all duration-200"
           >
             ＋ 今日の一皿を記録する
           </Link>
@@ -108,7 +108,7 @@ function HomeContent() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="料理名・メモで検索"
-              className="w-full mb-6 px-3.5 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-md placeholder:text-gray-400 focus:outline-none focus:border-gray-400 focus:bg-white transition"
+              className="w-full mb-6 px-3.5 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-md placeholder:text-gray-400 focus:outline-none focus:border-gray-500 focus:bg-white transition-colors duration-200"
             />
             {filteredDishes.length === 0 ? (
               <p className="text-gray-400 text-sm text-center py-10">
@@ -119,7 +119,7 @@ function HomeContent() {
               {filteredDishes.map((d) => (
                 <li
                   key={d.id}
-                  className="border border-gray-100 rounded-lg hover:border-gray-200 hover:shadow-sm transition"
+                  className="border border-gray-100 rounded-lg hover:border-gray-200 hover:shadow-[0_6px_16px_-8px_rgba(0,0,0,0.08)] active:shadow-sm active:translate-y-[0.5px] transition-all duration-200"
                 >
                   <Link
                     href={`/dish/${d.id}`}
