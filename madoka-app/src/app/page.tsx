@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import AuthGuard from "@/components/AuthGuard";
 import DishImage from "@/components/DishImage";
 import { useAuth } from "@/hooks/useAuth";
 import { auth } from "@/lib/firebase";
@@ -29,7 +28,6 @@ function HomeContent() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user) return;
     let mounted = true;
     (async () => {
       try {
@@ -45,7 +43,7 @@ function HomeContent() {
     return () => {
       mounted = false;
     };
-  }, [user]);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -59,12 +57,14 @@ function HomeContent() {
   return (
     <main className="min-h-screen bg-white">
       <section className="relative border-b border-gray-200 px-6 py-20">
-        <button
-          onClick={handleLogout}
-          className="absolute top-4 right-4 px-3 py-1 text-xs text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded transition"
-        >
-          ログアウト
-        </button>
+        {user && (
+          <button
+            onClick={handleLogout}
+            className="absolute top-4 right-4 px-3 py-1 text-xs text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded transition"
+          >
+            ログアウト
+          </button>
+        )}
         <div className="max-w-xl mx-auto">
           <p className="text-[10px] tracking-[0.3em] text-gray-400 uppercase mb-6">
             Our Family Cookbook
@@ -76,9 +76,11 @@ function HomeContent() {
             Restaurant
           </p>
           <div aria-hidden className="mt-6 mb-6 h-[2px] w-8 bg-[#C9A84C]" />
-          <p className="text-sm text-gray-600 mb-8">
-            ようこそ、{user?.displayName ?? user?.email ?? "ゲスト"} さん
-          </p>
+          {user && (
+            <p className="text-sm text-gray-600 mb-8">
+              ようこそ、{user.displayName ?? user.email ?? "ゲスト"} さん
+            </p>
+          )}
           <Link
             href="/new"
             className="block w-full text-center px-6 py-4 bg-gray-900 text-white text-sm tracking-[0.2em] hover:bg-gray-800 transition"
@@ -198,9 +200,5 @@ function HomeContent() {
 }
 
 export default function Home() {
-  return (
-    <AuthGuard>
-      <HomeContent />
-    </AuthGuard>
-  );
+  return <HomeContent />;
 }
