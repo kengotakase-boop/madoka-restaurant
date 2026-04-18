@@ -7,6 +7,7 @@ import DishImage from "@/components/DishImage";
 import { useAuth } from "@/hooks/useAuth";
 import { getDishById } from "@/lib/dishes";
 import { genreLabel } from "@/constants/genre";
+import { IMAGES_ENABLED } from "@/config/features";
 import type { Dish } from "@/types/dish";
 
 function formatDateTime(ts: Dish["cookedAt"] | null): string {
@@ -79,7 +80,7 @@ function Content({ id }: { id: string }) {
             </span>
           )}
         </h1>
-        {dish.imagePath && (
+        {IMAGES_ENABLED && dish.imagePath && (
           <DishImage
             imagePath={dish.imagePath}
             alt={dish.name}

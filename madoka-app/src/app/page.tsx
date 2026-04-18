@@ -8,6 +8,7 @@ import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { getDishesByOwner } from "@/lib/dishes";
 import { genreLabel } from "@/constants/genre";
+import { IMAGES_ENABLED } from "@/config/features";
 import type { Dish } from "@/types/dish";
 
 function formatDate(ts: Dish["cookedAt"] | null): string {
@@ -88,7 +89,7 @@ function HomeContent() {
             {dishes.map((d) => (
               <li key={d.id} className="border rounded p-3 hover:bg-gray-50">
                 <Link href={`/dish/${d.id}`} className="flex gap-3 items-center">
-                  {d.imagePath ? (
+                  {IMAGES_ENABLED && d.imagePath ? (
                     <DishImage
                       imagePath={d.imagePath}
                       alt={d.name}

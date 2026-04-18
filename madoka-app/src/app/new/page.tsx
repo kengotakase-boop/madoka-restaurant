@@ -11,6 +11,7 @@ import {
   GENRE_LABELS,
   type GenreId,
 } from "@/constants/genre";
+import { IMAGES_ENABLED } from "@/config/features";
 
 type GenerateResponse = {
   ingredients: string[];
@@ -85,7 +86,7 @@ function NewContent() {
         isAiGenerated,
         aiOriginal,
       });
-      if (file) {
+      if (IMAGES_ENABLED && file) {
         try {
           const imagePath = await uploadDishImage(file, user.uid, id);
           await updateDishImagePath(id, imagePath);
@@ -209,18 +210,20 @@ function NewContent() {
             </p>
           </div>
 
-          <div>
-            <label className="block text-sm mb-1">画像</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              className="w-full text-sm"
-            />
-            {file && (
-              <p className="text-xs text-gray-500 mt-1">選択中: {file.name}</p>
-            )}
-          </div>
+          {IMAGES_ENABLED && (
+            <div>
+              <label className="block text-sm mb-1">画像</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                className="w-full text-sm"
+              />
+              {file && (
+                <p className="text-xs text-gray-500 mt-1">選択中: {file.name}</p>
+              )}
+            </div>
+          )}
 
           <label className="flex items-center gap-2">
             <input

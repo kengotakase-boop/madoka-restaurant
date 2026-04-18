@@ -12,6 +12,7 @@ import {
   GENRE_LABELS,
   type GenreId,
 } from "@/constants/genre";
+import { IMAGES_ENABLED } from "@/config/features";
 import type { Dish } from "@/types/dish";
 
 function tsToLocalInput(ts: Dish["cookedAt"] | null): string {
@@ -85,7 +86,7 @@ function Content({ id }: { id: string }) {
         isSpecial,
         cookedAt: cookedDate,
       });
-      if (file) {
+      if (IMAGES_ENABLED && file) {
         try {
           const imagePath = await uploadDishImage(file, user.uid, id);
           await updateDishImagePath(id, imagePath);
@@ -157,30 +158,34 @@ function Content({ id }: { id: string }) {
               className="w-full border rounded px-3 py-2"
             />
           </div>
-          <div>
-            <label className="block text-sm mb-1">現在の画像</label>
-            {dish.imagePath ? (
-              <DishImage
-                imagePath={dish.imagePath}
-                alt={dish.name}
-                className="w-full max-h-64 object-cover rounded border"
-              />
-            ) : (
-              <p className="text-xs text-gray-500">未設定</p>
-            )}
-          </div>
-          <div>
-            <label className="block text-sm mb-1">画像を差し替え</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              className="w-full text-sm"
-            />
-            {file && (
-              <p className="text-xs text-gray-500 mt-1">選択中: {file.name}</p>
-            )}
-          </div>
+          {IMAGES_ENABLED && (
+            <>
+              <div>
+                <label className="block text-sm mb-1">現在の画像</label>
+                {dish.imagePath ? (
+                  <DishImage
+                    imagePath={dish.imagePath}
+                    alt={dish.name}
+                    className="w-full max-h-64 object-cover rounded border"
+                  />
+                ) : (
+                  <p className="text-xs text-gray-500">未設定</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm mb-1">画像を差し替え</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                  className="w-full text-sm"
+                />
+                {file && (
+                  <p className="text-xs text-gray-500 mt-1">選択中: {file.name}</p>
+                )}
+              </div>
+            </>
+          )}
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
