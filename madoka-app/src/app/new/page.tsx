@@ -81,6 +81,7 @@ function NewContent() {
         isSpecial,
         cookedAt: cookedDate,
         ownerUid: user.uid,
+        ownerName: user.displayName ?? user.email ?? "ゲスト",
         ingredients,
         steps,
         isAiGenerated,

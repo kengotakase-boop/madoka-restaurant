@@ -169,7 +169,10 @@ function HomeContent() {
                       )}
                       <div className="flex items-center gap-2 text-[11px] text-gray-400">
                         <span className="truncate">
-                          {user?.displayName ?? user?.email ?? "ゲスト"}
+                          {d.ownerName ??
+                            (d.ownerUid === user?.uid
+                              ? (user?.displayName ?? user?.email ?? "ゲスト")
+                              : "家族")}
                         </span>
                         <span aria-hidden className="text-gray-300">
                           ·

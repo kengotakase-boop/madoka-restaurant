@@ -12,6 +12,7 @@ export type Dish = {
   cookedAt: Timestamp;
   yearMonth: string;
   ownerUid: string;
+  ownerName?: string;
   createdAt: Timestamp | null;
   updatedAt: Timestamp | null;
   imagePath: string;

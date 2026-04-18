@@ -34,6 +34,7 @@ export type CreateDishInput = {
   isSpecial: boolean;
   cookedAt: Date;
   ownerUid: string;
+  ownerName: string;
   ingredients?: string[];
   steps?: string[];
   isAiGenerated?: boolean;
@@ -53,6 +54,7 @@ export async function createDish(input: CreateDishInput): Promise<string> {
     cookedAt,
     yearMonth,
     ownerUid: input.ownerUid,
+    ownerName: input.ownerName,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
     imagePath: "",
