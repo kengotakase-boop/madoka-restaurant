@@ -1,31 +1,13 @@
 // このファイルは参照用です。実際に有効なのは Firebase Console に公開された内容。
 // 変更時は Firebase Console → Firestore Database → ルール に貼り付けて公開してください。
 //
-// 家族 email 配列は src/config/family.ts の FAMILY_EMAILS と一致させること。
+// 現方針: 家族共通台帳（ログイン撤去移行中）。dishes は誰でも read/create/update、
+// delete は依然禁止。家族だけが URL を知っている前提の obscurity 運用。
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    function isFamily() {
-      return request.auth != null
-             && request.auth.token.email_verified == true
-             && request.auth.token.email in [
-               'kengotakase@gmail.com'
-             ];
-    }
-
     match /dishes/{dishId} {
-      // 家族共有: 家族メンバーなら全員分を閲覧可
-      allow read: if isFamily();
-
-      // 作成・更新は本人のみ（ownerUid の書き換えは不可）
-      allow create: if isFamily()
-                    && request.resource.data.ownerUid == request.auth.uid;
-
-      allow update: if isFamily()
-                    && resource.data.ownerUid == request.auth.uid
-                    && request.resource.data.ownerUid == resource.data.ownerUid;
-
+      allow read, create, update: if true;
       allow delete: if false;
     }
   }
