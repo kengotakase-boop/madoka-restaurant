@@ -64,9 +64,10 @@ export async function createDish(input: CreateDishInput): Promise<string> {
 export async function getAllDishes(): Promise<Dish[]> {
   const snap = await getDocs(dishesCol());
   const list = snap.docs.map((d) => normalize(d.id, d.data() as DishRaw));
+  // 最近触った料理を上に。updatedAt を第一優先、欠損時は createdAt、それも無ければ末尾。
   return list.sort((a, b) => {
-    const aMs = a.cookedAt?.toMillis?.() ?? 0;
-    const bMs = b.cookedAt?.toMillis?.() ?? 0;
+    const aMs = (a.updatedAt ?? a.createdAt)?.toMillis?.() ?? 0;
+    const bMs = (b.updatedAt ?? b.createdAt)?.toMillis?.() ?? 0;
     return bMs - aMs;
   });
 }
