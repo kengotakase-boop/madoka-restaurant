@@ -2,9 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import AuthGuard from "@/components/AuthGuard";
 import DishImage from "@/components/DishImage";
-import { useAuth } from "@/hooks/useAuth";
 import { getDishById, updateDish, updateDishImagePath } from "@/lib/dishes";
 import { uploadDishImage } from "@/lib/storage";
 import {
@@ -23,7 +21,6 @@ function tsToLocalInput(ts: Dish["cookedAt"] | null): string {
 }
 
 function Content({ id }: { id: string }) {
-  const { user } = useAuth();
   const router = useRouter();
   const [dish, setDish] = useState<Dish | null | undefined>(undefined);
   const [name, setName] = useState("");
@@ -36,7 +33,6 @@ function Content({ id }: { id: string }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user) return;
     let mounted = true;
     (async () => {
       try {
@@ -58,7 +54,7 @@ function Content({ id }: { id: string }) {
     return () => {
       mounted = false;
     };
-  }, [id, user]);
+  }, [id]);
 
   if (error) {
     return <main className="min-h-screen p-8 text-red-600">{error}</main>;
@@ -205,9 +201,5 @@ function Content({ id }: { id: string }) {
 
 export default function DishEditPage() {
   const params = useParams<{ id: string }>();
-  return (
-    <AuthGuard>
-      <Content id={params.id} />
-    </AuthGuard>
-  );
+  return <Content id={params.id} />;
 }

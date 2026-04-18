@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import AuthGuard from "@/components/AuthGuard";
 import DishImage from "@/components/DishImage";
 import { getDishById } from "@/lib/dishes";
 import { genreLabel } from "@/constants/genre";
@@ -137,9 +136,5 @@ function Content({ id }: { id: string }) {
 
 export default function DishDetailPage() {
   const params = useParams<{ id: string }>();
-  return (
-    <AuthGuard>
-      <Content id={params.id} />
-    </AuthGuard>
-  );
+  return <Content id={params.id} />;
 }
