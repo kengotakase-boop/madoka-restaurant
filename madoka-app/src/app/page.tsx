@@ -106,54 +106,85 @@ function HomeContent() {
           </p>
         ) : (
           <>
-            <p className="text-[10px] tracking-[0.3em] text-gray-400 uppercase text-center mb-6">
-              — {dishes.length} 皿の記録 —
-            </p>
+            <div className="flex items-baseline justify-between mb-5">
+              <h2 className="font-serif text-2xl text-gray-900">最近の記録</h2>
+              <span className="text-[10px] tracking-[0.25em] text-gray-400 uppercase">
+                {dishes.length} 皿
+              </span>
+            </div>
             <ul className="space-y-3">
               {dishes.map((d) => (
-              <li key={d.id} className="border rounded p-3 hover:bg-gray-50">
-                <Link href={`/dish/${d.id}`} className="flex gap-3 items-center">
-                  {IMAGES_ENABLED && d.imagePath ? (
-                    <DishImage
-                      imagePath={d.imagePath}
-                      alt={d.name}
-                      className="w-16 h-16 object-cover rounded flex-shrink-0"
-                    />
-                  ) : (
-                    <div
-                      aria-hidden
-                      className="w-16 h-16 rounded bg-gray-100 flex items-center justify-center flex-shrink-0"
-                    >
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="w-6 h-6 text-gray-300"
+                <li
+                  key={d.id}
+                  className="border border-gray-200 rounded-md hover:bg-gray-50 transition"
+                >
+                  <Link
+                    href={`/dish/${d.id}`}
+                    className="flex gap-4 items-start p-4"
+                  >
+                    {IMAGES_ENABLED && d.imagePath ? (
+                      <DishImage
+                        imagePath={d.imagePath}
+                        alt={d.name}
+                        className="w-14 h-14 object-cover rounded flex-shrink-0"
+                      />
+                    ) : (
+                      <div
+                        aria-hidden
+                        className="w-14 h-14 rounded bg-gray-100 flex items-center justify-center flex-shrink-0"
                       >
-                        <path d="M3 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V2" />
-                        <path d="M7 2v20" />
-                        <path d="M21 15V2a5 5 0 0 0-5 5v6a2 2 0 0 0 2 2h3Zm0 0v7" />
-                      </svg>
-                    </div>
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <h2 className="text-lg font-semibold truncate">{d.name}</h2>
-                      {d.isSpecial && (
-                        <span className="text-xs px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded">
-                          ★
-                        </span>
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="w-5 h-5 text-gray-300"
+                        >
+                          <path d="M3 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V2" />
+                          <path d="M7 2v20" />
+                          <path d="M21 15V2a5 5 0 0 0-5 5v6a2 2 0 0 0 2 2h3Zm0 0v7" />
+                        </svg>
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline gap-2 mb-1">
+                        <h3 className="text-base font-semibold text-gray-900 truncate">
+                          {d.name}
+                        </h3>
+                        {d.isSpecial && (
+                          <span
+                            aria-label="Special"
+                            className="text-sm text-[#C9A84C] flex-shrink-0"
+                          >
+                            ★
+                          </span>
+                        )}
+                      </div>
+                      {d.note && (
+                        <p className="text-xs text-gray-500 truncate mb-2">
+                          {d.note}
+                        </p>
                       )}
+                      <div className="flex items-center gap-2 text-[11px] text-gray-400">
+                        <span className="truncate">
+                          {user?.displayName ?? user?.email ?? "ゲスト"}
+                        </span>
+                        <span aria-hidden className="text-gray-300">
+                          ·
+                        </span>
+                        <span className="flex-shrink-0">{genreLabel(d.genre)}</span>
+                        <span aria-hidden className="text-gray-300">
+                          ·
+                        </span>
+                        <span className="flex-shrink-0">
+                          {formatDate(d.cookedAt)}
+                        </span>
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-600">
-                      {genreLabel(d.genre)} / {formatDate(d.cookedAt)}
-                    </p>
-                  </div>
-                </Link>
-              </li>
+                  </Link>
+                </li>
               ))}
             </ul>
           </>
