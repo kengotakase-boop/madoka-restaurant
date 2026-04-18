@@ -39,92 +39,104 @@ function Content({ id }: { id: string }) {
     return <main className="min-h-screen p-8">料理が見つかりません</main>;
   }
 
+  const updatedStr = formatDateTimeJst(dish.updatedAt ?? dish.createdAt);
+
   return (
-    <main className="min-h-screen p-8">
-      <div className="max-w-xl mx-auto">
-        <div className="flex justify-between mb-4">
-          <Link href="/" className="text-sm text-blue-600 hover:underline">
+    <main className="min-h-screen bg-white">
+      <div className="max-w-xl mx-auto px-6 py-8 md:py-12">
+        <div className="flex justify-between mb-10">
+          <Link
+            href="/"
+            className="text-xs tracking-[0.15em] text-gray-500 hover:text-gray-900 transition"
+          >
             ← 一覧へ
           </Link>
           <Link
             href={`/dish/${dish.id}/edit`}
-            className="text-sm text-blue-600 hover:underline"
+            className="text-xs tracking-[0.15em] text-gray-500 hover:text-gray-900 transition"
           >
             編集
           </Link>
         </div>
-        <h1 className="text-2xl font-bold mb-4">
-          {dish.name}
-          {dish.isSpecial && (
-            <span className="ml-2 text-sm px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded align-middle">
-              ★
-            </span>
+
+        <header className="mb-5">
+          <h1 className="font-serif text-[28px] md:text-[34px] font-semibold text-gray-900 leading-tight">
+            {dish.name}
+            {dish.isSpecial && (
+              <span
+                aria-label="Special"
+                className="ml-3 text-2xl text-[#C9A84C] align-middle leading-none"
+              >
+                ★
+              </span>
+            )}
+          </h1>
+        </header>
+
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-gray-400 pb-6 mb-8 border-b border-gray-100">
+          <span>{genreLabel(dish.genre)}</span>
+          <span aria-hidden className="text-gray-200">·</span>
+          <span>{formatDateTimeJst(dish.cookedAt)}</span>
+          {updatedStr && (
+            <>
+              <span aria-hidden className="text-gray-200">·</span>
+              <span>更新 {updatedStr}</span>
+            </>
           )}
-        </h1>
+        </div>
+
         {IMAGES_ENABLED && dish.imagePath && (
           <DishImage
             imagePath={dish.imagePath}
             alt={dish.name}
-            className="w-full max-h-96 object-cover rounded mb-6"
+            className="w-full max-h-96 object-cover rounded-md mb-8"
           />
         )}
-        <dl className="space-y-3 text-sm">
-          <div>
-            <dt className="inline font-semibold">ジャンル: </dt>
-            <dd className="inline">{genreLabel(dish.genre)}</dd>
+
+        <section className="mb-10">
+          <h2 className="text-[10px] tracking-[0.25em] text-gray-400 uppercase mb-3">
+            メモ
+          </h2>
+          <p className="text-[15px] leading-[1.8] text-gray-800 whitespace-pre-wrap">
+            {dish.note || (
+              <span className="text-gray-400">(未設定)</span>
+            )}
+          </p>
+        </section>
+
+        {dish.ingredients.length > 0 && (
+          <section className="mb-10">
+            <h2 className="text-[10px] tracking-[0.25em] text-gray-400 uppercase mb-3">
+              材料
+            </h2>
+            <ul className="list-disc list-inside space-y-1.5 text-[14px] text-gray-800 leading-relaxed">
+              {dish.ingredients.map((v, i) => (
+                <li key={i}>{v}</li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {dish.steps.length > 0 && (
+          <section className="mb-10">
+            <h2 className="text-[10px] tracking-[0.25em] text-gray-400 uppercase mb-3">
+              手順
+            </h2>
+            <ol className="list-decimal list-inside space-y-2 text-[14px] text-gray-800 leading-[1.75]">
+              {dish.steps.map((v, i) => (
+                <li key={i}>{v}</li>
+              ))}
+            </ol>
+          </section>
+        )}
+
+        {dish.isAiGenerated && (
+          <div className="pt-6 border-t border-gray-100">
+            <span className="inline-block text-[10px] tracking-[0.2em] text-purple-600 uppercase">
+              ✦ AI 生成の下書き
+            </span>
           </div>
-          <div>
-            <dt className="inline font-semibold">調理日時: </dt>
-            <dd className="inline">{formatDateTimeJst(dish.cookedAt)}</dd>
-          </div>
-          <div>
-            <dt className="inline font-semibold">yearMonth: </dt>
-            <dd className="inline">{dish.yearMonth}</dd>
-          </div>
-          {(dish.updatedAt || dish.createdAt) && (
-            <div>
-              <dt className="inline font-semibold">更新日時: </dt>
-              <dd className="inline">
-                {formatDateTimeJst(dish.updatedAt ?? dish.createdAt)}
-              </dd>
-            </div>
-          )}
-          <div>
-            <dt className="font-semibold mb-1">メモ:</dt>
-            <dd className="whitespace-pre-wrap">{dish.note || "(未設定)"}</dd>
-          </div>
-          {dish.ingredients.length > 0 && (
-            <div>
-              <dt className="font-semibold mb-1">材料:</dt>
-              <dd>
-                <ul className="list-disc list-inside space-y-1">
-                  {dish.ingredients.map((v, i) => (
-                    <li key={i}>{v}</li>
-                  ))}
-                </ul>
-              </dd>
-            </div>
-          )}
-          {dish.steps.length > 0 && (
-            <div>
-              <dt className="font-semibold mb-1">手順:</dt>
-              <dd>
-                <ol className="list-decimal list-inside space-y-1">
-                  {dish.steps.map((v, i) => (
-                    <li key={i}>{v}</li>
-                  ))}
-                </ol>
-              </dd>
-            </div>
-          )}
-          {dish.isAiGenerated && (
-            <div className="pt-2">
-              <span className="text-xs px-2 py-0.5 bg-purple-100 text-purple-800 rounded">
-                AI 生成の下書き
-              </span>
-            </div>
-          )}
-        </dl>
+        )}
       </div>
     </main>
   );
