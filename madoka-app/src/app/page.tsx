@@ -57,36 +57,60 @@ function HomeContent() {
   };
 
   return (
-    <main className="min-h-screen p-8">
-      <div className="max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-3xl font-bold">まどかレストラン</h1>
-          <button
-            onClick={handleLogout}
-            className="px-3 py-1 text-sm bg-gray-800 text-white rounded hover:bg-gray-700"
-          >
-            ログアウト
-          </button>
-        </div>
-        <p className="mb-6 text-sm text-gray-600">
-          ようこそ、{user?.displayName ?? user?.email ?? "ゲスト"} さん
-        </p>
-        <Link
-          href="/new"
-          className="inline-block mb-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+    <main className="min-h-screen bg-white">
+      <section className="relative border-b border-gray-200 px-6 py-20">
+        <button
+          onClick={handleLogout}
+          className="absolute top-4 right-4 px-3 py-1 text-xs text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded transition"
         >
-          + 新規登録へ
-        </Link>
+          ログアウト
+        </button>
+        <div className="max-w-xl mx-auto">
+          <p className="text-[10px] tracking-[0.3em] text-gray-400 uppercase mb-6">
+            Our Family Cookbook
+          </p>
+          <h1 className="font-serif font-light text-5xl text-gray-900 leading-none">
+            madoka
+          </h1>
+          <p className="font-serif italic text-[52px] leading-[1.1] text-[#C9A84C]">
+            Restaurant
+          </p>
+          <div aria-hidden className="mt-6 mb-6 h-[2px] w-8 bg-[#C9A84C]" />
+          <p className="text-sm text-gray-600 mb-8">
+            ようこそ、{user?.displayName ?? user?.email ?? "ゲスト"} さん
+          </p>
+          <Link
+            href="/new"
+            className="block w-full text-center px-6 py-4 bg-gray-900 text-white text-sm tracking-[0.2em] hover:bg-gray-800 transition"
+          >
+            ＋ 今日の一皿を記録する
+          </Link>
+          <a
+            href="#records"
+            className="block text-center text-xs tracking-[0.2em] text-gray-500 hover:text-gray-900 mt-4 py-2 transition"
+          >
+            みんなの記録を見る ↓
+          </a>
+        </div>
+      </section>
+
+      <section id="records" className="max-w-2xl mx-auto px-6 py-8">
         {error && (
           <p className="mb-4 text-sm text-red-600">{error}</p>
         )}
         {listLoading ? (
-          <p className="text-gray-500">読み込み中…</p>
+          <p className="text-gray-500 text-sm text-center py-8">読み込み中…</p>
         ) : dishes.length === 0 ? (
-          <p className="text-gray-500">まだ料理が登録されていません</p>
+          <p className="text-gray-500 text-sm text-center py-12">
+            最初の一皿を記録してみよう
+          </p>
         ) : (
-          <ul className="space-y-3">
-            {dishes.map((d) => (
+          <>
+            <p className="text-[10px] tracking-[0.3em] text-gray-400 uppercase text-center mb-6">
+              — {dishes.length} 皿の記録 —
+            </p>
+            <ul className="space-y-3">
+              {dishes.map((d) => (
               <li key={d.id} className="border rounded p-3 hover:bg-gray-50">
                 <Link href={`/dish/${d.id}`} className="flex gap-3 items-center">
                   {IMAGES_ENABLED && d.imagePath ? (
@@ -130,10 +154,11 @@ function HomeContent() {
                   </div>
                 </Link>
               </li>
-            ))}
-          </ul>
+              ))}
+            </ul>
+          </>
         )}
-      </div>
+      </section>
     </main>
   );
 }
