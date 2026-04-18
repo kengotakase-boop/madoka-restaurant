@@ -96,8 +96,23 @@ function HomeContent() {
                       className="w-16 h-16 object-cover rounded flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-16 h-16 rounded bg-gray-100 flex items-center justify-center text-xs text-gray-400 flex-shrink-0">
-                      no img
+                    <div
+                      aria-hidden
+                      className="w-16 h-16 rounded bg-gray-100 flex items-center justify-center flex-shrink-0"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="w-6 h-6 text-gray-300"
+                      >
+                        <path d="M3 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V2" />
+                        <path d="M7 2v20" />
+                        <path d="M21 15V2a5 5 0 0 0-5 5v6a2 2 0 0 0 2 2h3Zm0 0v7" />
+                      </svg>
                     </div>
                   )}
                   <div className="min-w-0 flex-1">
