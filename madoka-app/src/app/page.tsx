@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import DishImage from "@/components/DishImage";
 import { formatDateTimeJst } from "@/lib/date";
@@ -23,6 +23,20 @@ function HomeContent() {
   const [dishes, setDishes] = useState<Dish[]>([]);
   const [listLoading, setListLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+
+  // 料理名・メモ・ジャンル（表示ラベル）を対象に部分一致。空なら全件返し、並び順は維持。
+  const filteredDishes = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return dishes;
+    return dishes.filter((d) => {
+      return (
+        d.name.toLowerCase().includes(q) ||
+        d.note.toLowerCase().includes(q) ||
+        genreLabel(d.genre).toLowerCase().includes(q)
+      );
+    });
+  }, [dishes, query]);
 
   useEffect(() => {
     let mounted = true;
@@ -83,14 +97,26 @@ function HomeContent() {
           </p>
         ) : (
           <>
-            <div className="flex items-baseline justify-between mb-5">
+            <div className="flex items-baseline justify-between mb-4">
               <h2 className="font-serif text-2xl text-gray-900">最近の記録</h2>
               <span className="text-[10px] tracking-[0.25em] text-gray-400 uppercase">
-                {dishes.length} 皿
+                {filteredDishes.length} 皿
               </span>
             </div>
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="料理名・メモで検索"
+              className="w-full mb-5 px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:border-gray-400"
+            />
+            {filteredDishes.length === 0 ? (
+              <p className="text-gray-500 text-sm text-center py-8">
+                該当する記録がありません
+              </p>
+            ) : (
             <ul className="space-y-3">
-              {dishes.map((d) => (
+              {filteredDishes.map((d) => (
                 <li
                   key={d.id}
                   className="border border-gray-200 rounded-md hover:bg-gray-50 transition"
@@ -167,6 +193,7 @@ function HomeContent() {
                 </li>
               ))}
             </ul>
+            )}
           </>
         )}
       </section>
