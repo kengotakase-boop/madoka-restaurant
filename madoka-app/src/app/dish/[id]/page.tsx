@@ -3,23 +3,11 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import DishImage from "@/components/DishImage";
+import { formatDateTimeJst } from "@/lib/date";
 import { getDishById } from "@/lib/dishes";
 import { genreLabel } from "@/constants/genre";
 import { IMAGES_ENABLED } from "@/config/features";
 import type { Dish } from "@/types/dish";
-
-function formatDateTime(ts: Dish["cookedAt"] | null): string {
-  if (!ts) return "";
-  const d = ts.toDate();
-  return new Intl.DateTimeFormat("ja-JP", {
-    timeZone: "Asia/Tokyo",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(d);
-}
 
 function Content({ id }: { id: string }) {
   const [dish, setDish] = useState<Dish | null | undefined>(undefined);
@@ -87,12 +75,20 @@ function Content({ id }: { id: string }) {
           </div>
           <div>
             <dt className="inline font-semibold">調理日時: </dt>
-            <dd className="inline">{formatDateTime(dish.cookedAt)}</dd>
+            <dd className="inline">{formatDateTimeJst(dish.cookedAt)}</dd>
           </div>
           <div>
             <dt className="inline font-semibold">yearMonth: </dt>
             <dd className="inline">{dish.yearMonth}</dd>
           </div>
+          {(dish.updatedAt || dish.createdAt) && (
+            <div>
+              <dt className="inline font-semibold">更新日時: </dt>
+              <dd className="inline">
+                {formatDateTimeJst(dish.updatedAt ?? dish.createdAt)}
+              </dd>
+            </div>
+          )}
           <div>
             <dt className="font-semibold mb-1">メモ:</dt>
             <dd className="whitespace-pre-wrap">{dish.note || "(未設定)"}</dd>

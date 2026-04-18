@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import DishImage from "@/components/DishImage";
+import { formatDateTimeJst } from "@/lib/date";
 import { getAllDishes } from "@/lib/dishes";
 import { genreLabel } from "@/constants/genre";
 import { IMAGES_ENABLED } from "@/config/features";
@@ -152,6 +153,15 @@ function HomeContent() {
                           {formatDate(d.cookedAt)}
                         </span>
                       </div>
+                      {(() => {
+                        const ts = d.updatedAt ?? d.createdAt;
+                        const s = formatDateTimeJst(ts);
+                        return s ? (
+                          <p className="text-[10px] text-gray-400 mt-1">
+                            更新 {s}
+                          </p>
+                        ) : null;
+                      })()}
                     </div>
                   </Link>
                 </li>
