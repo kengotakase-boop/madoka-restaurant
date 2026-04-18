@@ -22,6 +22,9 @@ function normalize(id: string, raw: DishRaw): Dish {
     ...raw,
     id,
     genre: toGenreId(raw.genre),
+    // 旧 doc に createdAt/updatedAt が無い場合は null に揃え、Dish 型の契約を runtime でも真にする
+    createdAt: raw.createdAt ?? null,
+    updatedAt: raw.updatedAt ?? null,
   };
 }
 
