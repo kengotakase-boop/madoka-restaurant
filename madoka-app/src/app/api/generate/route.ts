@@ -32,14 +32,13 @@ export async function POST(request: Request) {
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
+  const googleApiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+  if (!apiKey && !googleApiKey) {
     return NextResponse.json(
-      { error: "ANTHROPIC_API_KEY is not configured on the server" },
+      { error: "AI API key is not configured on the server" },
       { status: 500 },
     );
   }
-
-  const client = new Anthropic({ apiKey });
 
   const prompt = `あなたは料理の下書きレシピを提案するアシスタントです。
 以下の料理について、家庭で作ることを前提としたレシピを生成してください。
@@ -60,16 +59,55 @@ ${userRequest ? `追加の要望: ${userRequest}\n` : ""}
 - 分量は 2 人前を目安に
 - note は 200 文字以内`;
 
-  try {
+  async function generateWithGemini() {
+    if (!googleApiKey) {
+      throw new Error("GOOGLE_GENERATIVE_AI_API_KEY is not configured");
+    }
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${googleApiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseMimeType: "application/json" },
+        }),
+      },
+    );
+    const data = (await res.json().catch(() => ({}))) as {
+      candidates?: { content?: { parts?: { text?: string }[] } }[];
+      error?: { message?: string };
+    };
+    if (!res.ok) {
+      throw new Error(data.error?.message ?? res.statusText);
+    }
+    return data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+  }
+
+  async function generateWithAnthropic() {
+    if (!apiKey) {
+      throw new Error("ANTHROPIC_API_KEY is not configured");
+    }
+    const client = new Anthropic({ apiKey });
     const response = await client.messages.create({
       model: "claude-opus-4-7",
       max_tokens: 4096,
       messages: [{ role: "user", content: prompt }],
     });
-
     let text = "";
     for (const block of response.content) {
       if (block.type === "text") text += block.text;
+    }
+    return text;
+  }
+
+  try {
+    let text = "";
+    try {
+      text = await generateWithAnthropic();
+    } catch (e) {
+      console.warn("[api/generate] Anthropic failed, trying Gemini:", e);
+      text = await generateWithGemini();
     }
 
     const jsonMatch = text.match(/\{[\s\S]*\}/);
