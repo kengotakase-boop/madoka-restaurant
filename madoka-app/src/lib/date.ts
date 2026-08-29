@@ -1,4 +1,4 @@
-import type { Timestamp } from "firebase/firestore";
+import type { TimestampLike } from "@/types/dish";
 
 export function toYearMonthJst(date: Date): string {
   const formatter = new Intl.DateTimeFormat("en-CA", {
@@ -9,9 +9,8 @@ export function toYearMonthJst(date: Date): string {
   return formatter.format(date);
 }
 
-// Firestore Timestamp を `YYYY/MM/DD HH:mm`（JST）で返す。null/undefined は "" を返す。
 export function formatDateTimeJst(
-  ts: Timestamp | null | undefined,
+  ts: TimestampLike | null | undefined,
 ): string {
   if (!ts) return "";
   return new Intl.DateTimeFormat("ja-JP", {

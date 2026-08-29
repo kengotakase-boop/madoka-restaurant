@@ -1,31 +1,67 @@
-import {
-  collection,
-  doc,
-  addDoc,
-  getDoc,
-  getDocs,
-  updateDoc,
-  Timestamp,
-  serverTimestamp,
-} from "firebase/firestore";
-import { db } from "@/lib/firebase";
 import { toYearMonthJst } from "@/lib/date";
 import { toGenreId, type GenreId } from "@/constants/genre";
-import type { Dish } from "@/types/dish";
+import type { Dish, TimestampLike } from "@/types/dish";
 
-const dishesCol = () => collection(db, "dishes");
+type ApiDish = {
+  id: string;
+  name: string;
+  genre: unknown;
+  note: string | null;
+  isSpecial: boolean;
+  isAiGenerated: boolean;
+  aiOriginal: string | null;
+  cookedAt: string;
+  yearMonth: string;
+  createdAt: string | null;
+  updatedAt: string | null;
+  imagePath: string | null;
+  ingredients: unknown;
+  steps: unknown;
+};
 
-type DishRaw = Omit<Dish, "id" | "genre"> & { genre: unknown };
+function timestamp(value: string | null): TimestampLike | null {
+  if (!value) return null;
+  return { toDate: () => new Date(value) };
+}
 
-function normalize(id: string, raw: DishRaw): Dish {
+function stringList(value: unknown): string[] {
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string")
+    : [];
+}
+
+function normalize(raw: ApiDish): Dish {
   return {
-    ...raw,
-    id,
+    id: raw.id,
+    name: raw.name,
     genre: toGenreId(raw.genre),
-    // 旧 doc に createdAt/updatedAt が無い場合は null に揃え、Dish 型の契約を runtime でも真にする
-    createdAt: raw.createdAt ?? null,
-    updatedAt: raw.updatedAt ?? null,
+    note: raw.note ?? "",
+    isSpecial: raw.isSpecial,
+    isAiGenerated: raw.isAiGenerated,
+    aiOriginal: raw.aiOriginal,
+    cookedAt: timestamp(raw.cookedAt) ?? timestamp(new Date().toISOString())!,
+    yearMonth: raw.yearMonth,
+    createdAt: timestamp(raw.createdAt),
+    updatedAt: timestamp(raw.updatedAt),
+    imagePath: raw.imagePath ?? "",
+    ingredients: stringList(raw.ingredients),
+    steps: stringList(raw.steps),
   };
+}
+
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(path, {
+    ...init,
+    headers: {
+      "Content-Type": "application/json",
+      ...init?.headers,
+    },
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(String(err.error ?? res.statusText));
+  }
+  return (await res.json()) as T;
 }
 
 export type CreateDishInput = {
@@ -41,42 +77,27 @@ export type CreateDishInput = {
 };
 
 export async function createDish(input: CreateDishInput): Promise<string> {
-  const cookedAt = Timestamp.fromDate(input.cookedAt);
-  const yearMonth = toYearMonthJst(input.cookedAt);
-  const ref = await addDoc(dishesCol(), {
-    name: input.name,
-    genre: input.genre,
-    note: input.note,
-    isSpecial: input.isSpecial,
-    isAiGenerated: input.isAiGenerated ?? false,
-    aiOriginal: input.aiOriginal ?? null,
-    cookedAt,
-    yearMonth,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-    imagePath: "",
-    ingredients: input.ingredients ?? [],
-    steps: input.steps ?? [],
+  const created = await request<{ id: string }>("/api/dishes", {
+    method: "POST",
+    body: JSON.stringify({
+      ...input,
+      cookedAt: input.cookedAt.toISOString(),
+      yearMonth: toYearMonthJst(input.cookedAt),
+    }),
   });
-  return ref.id;
+  return created.id;
 }
 
 export async function getAllDishes(): Promise<Dish[]> {
-  const snap = await getDocs(dishesCol());
-  const list = snap.docs.map((d) => normalize(d.id, d.data() as DishRaw));
-  // 最近触った料理を上に。updatedAt を第一優先、欠損時は createdAt、それも無ければ末尾。
-  return list.sort((a, b) => {
-    const aMs = (a.updatedAt ?? a.createdAt)?.toMillis?.() ?? 0;
-    const bMs = (b.updatedAt ?? b.createdAt)?.toMillis?.() ?? 0;
-    return bMs - aMs;
-  });
+  const list = await request<ApiDish[]>("/api/dishes", { cache: "no-store" });
+  return list.map(normalize);
 }
 
 export async function getDishById(id: string): Promise<Dish | null> {
-  const ref = doc(db, "dishes", id);
-  const snap = await getDoc(ref);
-  if (!snap.exists()) return null;
-  return normalize(snap.id, snap.data() as DishRaw);
+  const dish = await request<ApiDish | null>(`/api/dishes/${id}`, {
+    cache: "no-store",
+  });
+  return dish ? normalize(dish) : null;
 }
 
 export type UpdateDishInput = {
@@ -91,17 +112,12 @@ export async function updateDish(
   id: string,
   input: UpdateDishInput,
 ): Promise<void> {
-  const ref = doc(db, "dishes", id);
-  const cookedAt = Timestamp.fromDate(input.cookedAt);
-  const yearMonth = toYearMonthJst(input.cookedAt);
-  await updateDoc(ref, {
-    name: input.name,
-    genre: input.genre,
-    note: input.note,
-    isSpecial: input.isSpecial,
-    cookedAt,
-    yearMonth,
-    updatedAt: serverTimestamp(),
+  await request(`/api/dishes/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({
+      ...input,
+      cookedAt: input.cookedAt.toISOString(),
+    }),
   });
 }
 
@@ -109,9 +125,12 @@ export async function updateDishImagePath(
   id: string,
   imagePath: string,
 ): Promise<void> {
-  const ref = doc(db, "dishes", id);
-  await updateDoc(ref, {
-    imagePath,
-    updatedAt: serverTimestamp(),
+  await request(`/api/dishes/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({ imagePath }),
   });
+}
+
+export async function deleteDish(id: string): Promise<void> {
+  await request(`/api/dishes/${id}`, { method: "DELETE" });
 }

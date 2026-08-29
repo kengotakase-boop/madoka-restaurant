@@ -4,6 +4,7 @@ import Link from "next/link";
 import DishImage from "@/components/DishImage";
 import { formatDateTimeJst } from "@/lib/date";
 import { getAllDishes } from "@/lib/dishes";
+import { getHeroImage, setHeroImage } from "@/lib/hero";
 import { genreLabel } from "@/constants/genre";
 import { IMAGES_ENABLED } from "@/config/features";
 import type { Dish } from "@/types/dish";
@@ -22,6 +23,8 @@ function formatDate(ts: Dish["cookedAt"] | null): string {
 function HomeContent() {
   const [dishes, setDishes] = useState<Dish[]>([]);
   const [listLoading, setListLoading] = useState(true);
+  const [heroImage, setHeroImageState] = useState<string | null>(null);
+  const [heroSaving, setHeroSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
 
@@ -42,8 +45,11 @@ function HomeContent() {
     let mounted = true;
     (async () => {
       try {
-        const list = await getAllDishes();
-        if (mounted) setDishes(list);
+        const [list, hero] = await Promise.all([getAllDishes(), getHeroImage()]);
+        if (mounted) {
+          setDishes(list);
+          setHeroImageState(hero);
+        }
       } catch (e) {
         console.error(e);
         if (mounted) setError("一覧の取得に失敗しました");
@@ -56,10 +62,39 @@ function HomeContent() {
     };
   }, []);
 
+  const handleHeroChange = async (file: File | undefined) => {
+    if (!file) return;
+    setHeroSaving(true);
+    try {
+      const image = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+      });
+      await setHeroImage(image);
+      setHeroImageState(image);
+    } catch (e) {
+      console.error(e);
+      alert("背景写真の保存に失敗しました");
+    } finally {
+      setHeroSaving(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-white">
-      <section className="relative border-b border-gray-100 px-6 py-14 md:py-20">
-        <div className="max-w-xl mx-auto">
+      <section className="relative overflow-hidden border-b border-gray-100 px-6 py-14 md:py-20">
+        {heroImage && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={heroImage}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover opacity-25"
+          />
+        )}
+        <div className="absolute inset-0 bg-white/80" aria-hidden />
+        <div className="relative z-10 max-w-xl mx-auto">
           <p className="text-[10px] tracking-[0.3em] text-gray-400 uppercase mb-5">
             Our Family Cookbook
           </p>
@@ -82,6 +117,19 @@ function HomeContent() {
           >
             みんなの記録を見る ↓
           </a>
+          <label className="relative mt-3 block cursor-pointer text-center text-xs tracking-[0.2em] text-gray-400 hover:text-gray-900 py-2 transition">
+            {heroSaving ? "保存中…" : "背景写真を変更"}
+            <input
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              disabled={heroSaving}
+              onChange={(e) => {
+                void handleHeroChange(e.target.files?.[0]);
+                e.currentTarget.value = "";
+              }}
+            />
+          </label>
         </div>
       </section>
 

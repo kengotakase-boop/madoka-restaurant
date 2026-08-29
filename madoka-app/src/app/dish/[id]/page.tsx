@@ -1,16 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import DishImage from "@/components/DishImage";
 import { formatDateTimeJst } from "@/lib/date";
-import { getDishById } from "@/lib/dishes";
+import { deleteDish, getDishById } from "@/lib/dishes";
 import { genreLabel } from "@/constants/genre";
 import { IMAGES_ENABLED } from "@/config/features";
 import type { Dish } from "@/types/dish";
 
 function Content({ id }: { id: string }) {
+  const router = useRouter();
   const [dish, setDish] = useState<Dish | null | undefined>(undefined);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -40,6 +42,19 @@ function Content({ id }: { id: string }) {
   }
 
   const updatedStr = formatDateTimeJst(dish.updatedAt ?? dish.createdAt);
+
+  const handleDelete = async () => {
+    if (!window.confirm("この料理を削除しますか？")) return;
+    setDeleting(true);
+    try {
+      await deleteDish(dish.id);
+      router.replace("/");
+    } catch (e) {
+      console.error(e);
+      alert("削除に失敗しました");
+      setDeleting(false);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-white">
@@ -137,6 +152,15 @@ function Content({ id }: { id: string }) {
             </span>
           </div>
         )}
+
+        <button
+          type="button"
+          onClick={handleDelete}
+          disabled={deleting}
+          className="mt-10 w-full rounded border border-red-200 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+        >
+          {deleting ? "削除中…" : "削除"}
+        </button>
       </div>
     </main>
   );

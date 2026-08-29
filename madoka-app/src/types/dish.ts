@@ -1,5 +1,8 @@
-import type { Timestamp } from "firebase/firestore";
 import type { GenreId } from "@/constants/genre";
+
+export type TimestampLike = {
+  toDate(): Date;
+};
 
 export type Dish = {
   id: string;
@@ -9,10 +12,10 @@ export type Dish = {
   isSpecial: boolean;
   isAiGenerated: boolean;
   aiOriginal: string | null;
-  cookedAt: Timestamp;
+  cookedAt: TimestampLike;
   yearMonth: string;
-  createdAt: Timestamp | null;
-  updatedAt: Timestamp | null;
+  createdAt: TimestampLike | null;
+  updatedAt: TimestampLike | null;
   imagePath: string;
   ingredients: string[];
   steps: string[];
