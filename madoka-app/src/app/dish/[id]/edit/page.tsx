@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import DishImage from "@/components/DishImage";
-import { getDishById, updateDish, updateDishImagePath } from "@/lib/dishes";
+import { getDishById, updateDish } from "@/lib/dishes";
 import { uploadDishImage } from "@/lib/storage";
+import { IMAGE_ACCEPT, imageFileError } from "@/lib/imageRules";
+import ImageStorageNote from "@/components/ImageStorageNote";
 import {
   GENRE_IDS,
   GENRE_LABELS,
@@ -80,11 +82,9 @@ function Content({ id }: { id: string }) {
       });
       if (IMAGES_ENABLED && file) {
         try {
-          const imagePath = await uploadDishImage(file, "shared", id);
-          await updateDishImagePath(id, imagePath);
+          await uploadDishImage(file, id);
         } catch (upErr) {
-          console.error(upErr);
-          alert("情報は更新されましたが、画像のアップロードに失敗しました");
+          alert(`情報は更新されましたが、写真の保存を確認できませんでした。${upErr instanceof Error ? upErr.message : "詳細画面から確認してください。"}`);
         }
       }
       router.replace(`/dish/${id}`);
@@ -168,13 +168,19 @@ function Content({ id }: { id: string }) {
                 <label className="block text-sm mb-1">画像を差し替え</label>
                 <input
                   type="file"
-                  accept="image/*"
-                  onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                  accept={IMAGE_ACCEPT}
+                  onChange={(e) => {
+                    const selected = e.target.files?.[0];
+                    const validationError = selected ? imageFileError(selected) : null;
+                    if (validationError) { alert(validationError); e.currentTarget.value = ""; setFile(null); return; }
+                    setFile(selected ?? null);
+                  }}
                   className="w-full text-sm"
                 />
                 {file && (
                   <p className="text-xs text-gray-500 mt-1">選択中: {file.name}</p>
                 )}
+                <ImageStorageNote className="mt-2 text-xs text-gray-500" />
               </div>
             </>
           )}

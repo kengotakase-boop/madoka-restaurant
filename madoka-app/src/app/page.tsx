@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
+import NextImage from "next/image";
 import Link from "next/link";
 import DishImage from "@/components/DishImage";
 import { formatDateTimeJst } from "@/lib/date";
@@ -8,6 +9,18 @@ import { getHeroImage, setHeroImage } from "@/lib/hero";
 import { genreLabel } from "@/constants/genre";
 import { IMAGES_ENABLED } from "@/config/features";
 import type { Dish } from "@/types/dish";
+
+const DEFAULT_HERO_IMAGE = "/images/madoka-home-exterior.jpg";
+
+function isUsableHeroImage(src: string | null): Promise<boolean> {
+  if (!src) return Promise.resolve(false);
+  return new Promise((resolve) => {
+    const probe = new window.Image();
+    probe.onload = () => resolve(probe.naturalWidth > 1 && probe.naturalHeight > 1);
+    probe.onerror = () => resolve(false);
+    probe.src = src;
+  });
+}
 
 function formatDate(ts: Dish["cookedAt"] | null): string {
   if (!ts) return "";
@@ -43,20 +56,29 @@ function HomeContent() {
 
   useEffect(() => {
     let mounted = true;
-    (async () => {
-      try {
-        const [list, hero] = await Promise.all([getAllDishes(), getHeroImage()]);
-        if (mounted) {
-          setDishes(list);
-          setHeroImageState(hero);
-        }
-      } catch (e) {
+
+    void getAllDishes()
+      .then((list) => {
+        if (mounted) setDishes(list);
+      })
+      .catch((e) => {
         console.error(e);
         if (mounted) setError("一覧の取得に失敗しました");
-      } finally {
+      })
+      .finally(() => {
         if (mounted) setListLoading(false);
-      }
-    })();
+      });
+
+    void getHeroImage()
+      .then(async (hero) => {
+        const usable = await isUsableHeroImage(hero);
+        if (mounted) setHeroImageState(usable ? hero : null);
+      })
+      .catch((e) => {
+        console.warn("背景写真の取得に失敗したため標準背景を表示します", e);
+        if (mounted) setHeroImageState(null);
+      });
+
     return () => {
       mounted = false;
     };
@@ -84,40 +106,38 @@ function HomeContent() {
 
   return (
     <main className="min-h-screen bg-white">
-      <section className="relative overflow-hidden border-b border-gray-100 px-6 py-14 md:py-20">
-        {heroImage && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={heroImage}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover opacity-25"
-          />
-        )}
-        <div className="absolute inset-0 bg-white/80" aria-hidden />
-        <div className="relative z-10 max-w-xl mx-auto">
-          <p className="text-[10px] tracking-[0.3em] text-gray-400 uppercase mb-5">
+      <section className="relative mx-auto h-[420px] max-w-[800px] overflow-hidden bg-black">
+        <NextImage
+          src={heroImage ?? DEFAULT_HERO_IMAGE}
+          alt=""
+          fill
+          sizes="(max-width: 800px) 100vw, 800px"
+          preload
+          unoptimized={heroImage !== null}
+          className="object-cover object-[center_48%] grayscale brightness-[0.86] contrast-[1.08]"
+        />
+        <div
+          className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.12)_0%,rgba(0,0,0,0.2)_42%,rgba(0,0,0,0.72)_100%)]"
+          aria-hidden
+        />
+        <Link
+          href="/new"
+          className="absolute right-4 top-4 z-10 bg-white/95 px-4 py-2.5 text-[10px] font-bold tracking-[0.24em] text-gray-950 transition hover:bg-[#C9A84C] hover:text-white sm:right-5 sm:top-5 sm:px-[18px]"
+        >
+          + ADD DISH
+        </Link>
+        <div className="absolute bottom-7 left-6 z-10">
+          <p className="mb-2.5 text-[9px] uppercase tracking-[0.42em] text-white/60">
             Our Family Cookbook
           </p>
-          <h1 className="font-serif font-light text-[44px] md:text-6xl text-gray-900 leading-none">
+          <h1 className="font-serif text-[48px] font-light leading-none text-white">
             madoka
           </h1>
-          <p className="font-serif italic text-[46px] md:text-[60px] leading-[1.05] text-[#C9A84C]">
+          <p className="font-serif text-[52px] italic leading-[1.06] text-[#C9A84C]">
             Restaurant
           </p>
-          <div aria-hidden className="mt-5 mb-8 h-[2px] w-8 bg-[#C9A84C]" />
-          <Link
-            href="/new"
-            className="block w-full text-center px-6 py-[18px] bg-gray-900 text-white text-[15px] font-medium tracking-[0.18em] rounded-sm shadow-sm hover:bg-black hover:shadow-[0_14px_30px_-12px_rgba(201,168,76,0.35)] hover:-translate-y-[1px] active:translate-y-0 active:shadow-sm transition-all duration-200"
-          >
-            ＋ 今日の一皿を記録する
-          </Link>
-          <a
-            href="#records"
-            className="block text-center text-xs tracking-[0.2em] text-gray-400 hover:text-gray-900 mt-5 py-2 transition"
-          >
-            みんなの記録を見る ↓
-          </a>
-          <label className="relative mt-3 block cursor-pointer text-center text-xs tracking-[0.2em] text-gray-400 hover:text-gray-900 py-2 transition">
+        </div>
+        <label className="absolute bottom-4 right-4 z-10 cursor-pointer bg-black/45 px-3 py-2 text-[10px] tracking-[0.16em] text-white/75 transition hover:bg-black/65 hover:text-white sm:bottom-5 sm:right-5">
             {heroSaving ? "保存中…" : "背景写真を変更"}
             <input
               type="file"
@@ -129,8 +149,7 @@ function HomeContent() {
                 e.currentTarget.value = "";
               }}
             />
-          </label>
-        </div>
+        </label>
       </section>
 
       <section id="records" className="max-w-2xl mx-auto px-6 py-10 md:py-12">
