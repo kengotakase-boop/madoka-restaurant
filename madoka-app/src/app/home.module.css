@@ -116,8 +116,20 @@
 .album :is(a, button, input):focus-visible, .changeBackground:focus-within { outline: 3px solid #8a6819; outline-offset: 3px; }
 
 @media (width < 48rem) {
+  .genres { flex-wrap: nowrap; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+  .genres::-webkit-scrollbar { display: none; }
+  .genreButton { flex: 0 0 auto; white-space: nowrap; }
+  .genreButton:first-child { position: sticky; left: 0; z-index: 1; }
+  .genreButton:focus-visible { outline-offset: -3px; }
+  .resultsBar { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 .5rem; min-height: 44px; }
+  .resultsBar > p { grid-column: 1; grid-row: 1; }
+  .sortControls { grid-column: 2; grid-row: 1; flex-wrap: nowrap; }
+  .sortControls > span { display: none; }
+  .sortButton { padding: .375rem; font-size: .8125rem; white-space: nowrap; }
+  .clearButton { grid-column: 1 / -1; grid-row: 2; justify-self: end; }
   .grid, .loadingGrid { row-gap: .75rem; }
-  .photo, .loadingCard { height: 290px; }
+  .photo, .loadingCard { height: auto; aspect-ratio: 4 / 3; }
+  .dishImage { position: absolute; inset: 0; object-fit: cover; object-position: center; }
   .cardText { padding: .5rem .75rem; }
   .dishName { min-height: 1.5em; }
   .genreLabel { margin-top: .25rem; }
