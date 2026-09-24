@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import NextImage from "next/image";
 import Link from "next/link";
 import DishImage from "@/components/DishImage";
+import { formatDateJst } from "@/lib/date";
 import { getAllDishes } from "@/lib/dishes";
 import { getHeroImage, setHeroImage } from "@/lib/hero";
 import { GENRE_IDS, genreLabel, type GenreId } from "@/constants/genre";
@@ -211,7 +212,9 @@ function HomeContent() {
           </div>
         ) : (
             <ul className={styles.grid} aria-label="料理一覧">
-              {filteredDishes.map((d) => (
+              {filteredDishes.map((d) => {
+                const registeredDate = formatDateJst(d.createdAt);
+                return (
                 <li key={d.id} className={styles.card}>
                   <Link
                     href={`/dish/${d.id}`}
@@ -252,11 +255,20 @@ function HomeContent() {
                     </div>
                     <div className={styles.cardText}>
                       <h3 className={styles.dishName}>{d.name}</h3>
-                      <span className={styles.genreLabel}>{genreLabel(d.genre)}</span>
+                      <div className={styles.dishMeta}>
+                        <span className={styles.genreLabel}>{genreLabel(d.genre)}</span>
+                        {registeredDate && <>
+                          <span aria-hidden>｜</span>
+                          <time dateTime={registeredDate.replaceAll(".", "-")} aria-label={`登録日 ${registeredDate}`}>
+                            {registeredDate}
+                          </time>
+                        </>}
+                      </div>
                     </div>
                   </Link>
                 </li>
-              ))}
+                );
+              })}
             </ul>
         )}
       </section>

@@ -15,6 +15,7 @@ function load(file, imports = {}) {
   return exports;
 }
 const genres = load("../src/constants/genre.ts");
+const { formatDateJst } = load("../src/lib/date.ts");
 const { filterDishes, sortDishesByRegistration } = load("../src/lib/dishSearch.ts", { "../constants/genre": genres });
 const dishes = Object.freeze([
   Object.freeze({ name: "肉じゃが", note: "家族の定番", genre: "washoku" }),
@@ -99,4 +100,24 @@ test("registration sorting applies to combined text and genre filters", () => {
 test("registration sorting handles empty and single results", () => {
   assert.deepEqual(ids(sortDishesByRegistration([])), []);
   assert.deepEqual(ids(sortDishesByRegistration([registered[0]])), ["b"]);
+});
+
+test("card registration dates use dotted JST dates, including midnight and zero padding", () => {
+  assert.equal(formatDateJst(timestamp("2026-09-23T15:00:00Z")), "2026.09.24");
+  assert.equal(formatDateJst(timestamp("2026-09-23T14:59:59Z")), "2026.09.23");
+  assert.equal(formatDateJst(timestamp("2026-01-02T00:00:00Z")), "2026.01.02");
+});
+
+test("missing/invalid registration dates are omitted instead of fabricated", () => {
+  for (const value of [null, undefined, timestamp("invalid")]) {
+    assert.equal(formatDateJst(value), "");
+  }
+});
+
+test("displayed registration dates agree with both registration sort directions", () => {
+  const dates = (order) => Array.from(sortDishesByRegistration(registered, order), (dish) => formatDateJst(dish.createdAt));
+  assert.deepEqual(dates("newest"), ["2026.09.24", "2026.09.23", "2026.09.22"]);
+  assert.deepEqual(dates("oldest"), ["2026.09.22", "2026.09.23", "2026.09.24"]);
+  const source = readFileSync(new URL("../src/app/page.tsx", import.meta.url), "utf8");
+  assert.match(source, /formatDateJst\(d\.createdAt\)/);
 });
