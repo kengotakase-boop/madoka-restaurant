@@ -39,8 +39,10 @@ export async function uploadDishImage(file: File, dishId: string): Promise<strin
   return result.imagePath;
 }
 
-export function getDishImageUrl(imagePath: string): string | null {
+export function getDishImageUrl(imagePath: string, updatedAt?: number): string | null {
   const parsed = parseDishImagePath(imagePath);
   if (!parsed) return null;
-  return `/api/dishes/${parsed.dishId}/image?v=${parsed.imageId}`;
+  // Storage stays at /main; the browser needs a new URL after a successful edit.
+  const revision = updatedAt !== undefined && Number.isFinite(updatedAt) ? `&updated=${updatedAt}` : "";
+  return `/api/dishes/${parsed.dishId}/image?v=${parsed.imageId}${revision}`;
 }

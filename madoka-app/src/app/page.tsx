@@ -195,6 +195,7 @@ function HomeContent() {
                     {IMAGES_ENABLED && d.imagePath ? (
                       <DishImage
                         imagePath={d.imagePath}
+                        updatedAt={d.updatedAt?.toDate().getTime()}
                         alt={d.name}
                         className="w-14 h-14 object-cover rounded-md flex-shrink-0"
                       />

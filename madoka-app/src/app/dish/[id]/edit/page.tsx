@@ -157,6 +157,7 @@ function Content({ id }: { id: string }) {
                 {dish.imagePath ? (
                   <DishImage
                     imagePath={dish.imagePath}
+                    updatedAt={dish.updatedAt?.toDate().getTime()}
                     alt={dish.name}
                     className="w-full max-h-64 object-cover rounded border"
                   />

@@ -49,7 +49,11 @@ function harness(options = {}) {
         linkAttempts++;
         if (options.linkFailure || linkAttempts <= (options.linkFailures ?? 0)) return Response.json({ message: "private-upstream-detail" }, { status: 500 });
         const row = rows.find((row) => row.id.toLowerCase() === params.p_id.toLowerCase());
-        if (!options.noLink && row) row.image_path = params.p_image_path;
+        if (!options.noLink && row) {
+          row.image_path = params.p_image_path;
+          // Existing production RPC updates this timestamp on every image link.
+          row.updated_at = new Date(Date.UTC(2026, 8, 24) + linkAttempts).toISOString();
+        }
         // The database committed, but the server never receives its response.
         if (linkAttempts <= (options.linkResponseLosses ?? 0)) throw new Error("mock response lost after DB commit");
         return new Response(null, { status: 204 });
@@ -518,4 +522,39 @@ test("fixed-path replacement bypasses stale CDN without creating another object"
   assert.notEqual(downloads[0].search, downloads[1].search);
   assert.equal(h.objects.size, 1);
   assert.equal(h.rows[0].image_path, mainPath);
+});
+
+test("browser URL varies only with the stored revision; legacy and missing dates remain safe", () => {
+  const { getDishImageUrl } = harness().load("lib/storage.ts");
+  assert.equal(getDishImageUrl(mainPath, 123), `/api/dishes/${id}/image?v=main&updated=123`);
+  assert.equal(getDishImageUrl(mainPath, 123), getDishImageUrl(mainPath, 123));
+  assert.notEqual(getDishImageUrl(mainPath, 123), getDishImageUrl(mainPath, 124));
+  assert.equal(getDishImageUrl(storedPath, 123), `/api/dishes/${id}/image?v=${objectId}&updated=123`);
+  for (const revision of [undefined, NaN, Infinity]) {
+    assert.equal(getDishImageUrl(mainPath, revision), `/api/dishes/${id}/image?v=main`);
+  }
+  assert.equal(getDishImageUrl("https://other.invalid/secret", 123), null);
+});
+
+test("two successive replacements refresh list/detail image URLs but retain one Storage object", async () => {
+  const h = harness();
+  const route = h.load(imageRoute);
+  const { getDishImageUrl } = h.load("lib/storage.ts");
+  const browserCache = new Map();
+  for (const suffix of [10, 20, 30]) {
+    const bytes = new Uint8Array([...png, suffix]);
+    assert.equal((await route.POST(uploadRequest({ bytes }), context())).status, 200);
+    const detail = await (await h.load("app/api/dishes/[id]/route.ts").GET(new Request("http://localhost:3000"), context())).json();
+    const [listed] = await (await h.load("app/api/dishes/route.ts").GET()).json();
+    const detailUrl = getDishImageUrl(detail.imagePath, new Date(detail.updatedAt).getTime());
+    const listUrl = getDishImageUrl(listed.imagePath, new Date(listed.updatedAt).getTime());
+    assert.equal(listUrl, detailUrl);
+    assert.equal(browserCache.has(detailUrl), false);
+    const response = await route.GET(new Request(`http://localhost:3000${detailUrl}`), context());
+    browserCache.set(detailUrl, new Uint8Array(await response.arrayBuffer()));
+    assert.deepEqual(browserCache.get(listUrl), bytes);
+    assert.equal(h.objects.size, 1);
+    assert.equal(detail.imagePath, mainPath);
+  }
+  assert.equal(browserCache.size, 3);
 });

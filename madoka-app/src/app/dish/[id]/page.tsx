@@ -103,6 +103,7 @@ function Content({ id }: { id: string }) {
         {IMAGES_ENABLED && dish.imagePath && (
           <DishImage
             imagePath={dish.imagePath}
+            updatedAt={dish.updatedAt?.toDate().getTime()}
             alt={dish.name}
             className="w-full max-h-96 object-cover rounded-md mb-8"
           />
