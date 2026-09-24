@@ -115,6 +115,14 @@
 .loadingCard { height: 360px; border-radius: .625rem; background: #f2f0eb; }
 .album :is(a, button, input):focus-visible, .changeBackground:focus-within { outline: 3px solid #8a6819; outline-offset: 3px; }
 
+@media (width < 48rem) {
+  .grid, .loadingGrid { row-gap: .75rem; }
+  .photo, .loadingCard { height: 290px; }
+  .cardText { padding: .5rem .75rem; }
+  .dishName { min-height: 1.5em; }
+  .genreLabel { margin-top: .25rem; }
+}
+
 @media (min-width: 48rem) {
   .heroContent { min-height: 16.25rem; padding: 1.5rem 2rem; }
   .title { font-size: 3rem; }
