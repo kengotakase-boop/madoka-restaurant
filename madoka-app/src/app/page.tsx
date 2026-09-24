@@ -3,12 +3,13 @@ import { useEffect, useMemo, useState } from "react";
 import NextImage from "next/image";
 import Link from "next/link";
 import DishImage from "@/components/DishImage";
-import { formatDateTimeJst } from "@/lib/date";
 import { getAllDishes } from "@/lib/dishes";
 import { getHeroImage, setHeroImage } from "@/lib/hero";
-import { genreLabel } from "@/constants/genre";
+import { GENRE_IDS, genreLabel, type GenreId } from "@/constants/genre";
+import { filterDishes, sortDishesByRegistration, type RegistrationOrder } from "@/lib/dishSearch";
 import { IMAGES_ENABLED } from "@/config/features";
 import type { Dish } from "@/types/dish";
+import styles from "./home.module.css";
 
 const DEFAULT_HERO_IMAGE = "/images/madoka-home-exterior.jpg";
 
@@ -22,17 +23,6 @@ function isUsableHeroImage(src: string | null): Promise<boolean> {
   });
 }
 
-function formatDate(ts: Dish["cookedAt"] | null): string {
-  if (!ts) return "";
-  const d = ts.toDate();
-  return new Intl.DateTimeFormat("ja-JP", {
-    timeZone: "Asia/Tokyo",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(d);
-}
-
 function HomeContent() {
   const [dishes, setDishes] = useState<Dish[]>([]);
   const [listLoading, setListLoading] = useState(true);
@@ -40,19 +30,19 @@ function HomeContent() {
   const [heroSaving, setHeroSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const [selectedGenre, setSelectedGenre] = useState<GenreId | "all">("all");
+  const [registrationOrder, setRegistrationOrder] = useState<RegistrationOrder>("newest");
+  const [listAttempt, setListAttempt] = useState(0);
 
-  // 料理名・メモ・ジャンル（表示ラベル）を対象に部分一致。空なら全件返し、並び順は維持。
-  const filteredDishes = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return dishes;
-    return dishes.filter((d) => {
-      return (
-        d.name.toLowerCase().includes(q) ||
-        d.note.toLowerCase().includes(q) ||
-        genreLabel(d.genre).toLowerCase().includes(q)
-      );
-    });
-  }, [dishes, query]);
+  const filteredDishes = useMemo(
+    () => sortDishesByRegistration(filterDishes(dishes, query, selectedGenre), registrationOrder),
+    [dishes, query, selectedGenre, registrationOrder],
+  );
+  const hasFilters = query !== "" || selectedGenre !== "all";
+  const clearFilters = () => {
+    setQuery("");
+    setSelectedGenre("all");
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -68,6 +58,14 @@ function HomeContent() {
       .finally(() => {
         if (mounted) setListLoading(false);
       });
+
+    return () => {
+      mounted = false;
+    };
+  }, [listAttempt]);
+
+  useEffect(() => {
+    let mounted = true;
 
     void getHeroImage()
       .then(async (hero) => {
@@ -105,13 +103,13 @@ function HomeContent() {
   };
 
   return (
-    <main className="min-h-screen bg-white">
-      <section className="relative mx-auto h-[420px] max-w-[800px] overflow-hidden bg-black">
+    <main className={styles.album}>
+      <section className={styles.hero} aria-label="まどかレストラン">
         <NextImage
           src={heroImage ?? DEFAULT_HERO_IMAGE}
           alt=""
           fill
-          sizes="(max-width: 800px) 100vw, 800px"
+          sizes="(max-width: 1120px) 100vw, 1120px"
           preload
           unoptimized={heroImage !== null}
           className="object-cover object-[center_48%] grayscale brightness-[0.86] contrast-[1.08]"
@@ -120,89 +118,116 @@ function HomeContent() {
           className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.12)_0%,rgba(0,0,0,0.2)_42%,rgba(0,0,0,0.72)_100%)]"
           aria-hidden
         />
-        <Link
-          href="/new"
-          className="absolute right-4 top-4 z-10 bg-white/95 px-4 py-2.5 text-[10px] font-bold tracking-[0.24em] text-gray-950 transition hover:bg-[#C9A84C] hover:text-white sm:right-5 sm:top-5 sm:px-[18px]"
-        >
-          + ADD DISH
-        </Link>
-        <div className="absolute bottom-7 left-6 z-10">
-          <p className="mb-2.5 text-[9px] uppercase tracking-[0.42em] text-white/60">
-            Our Family Cookbook
-          </p>
-          <h1 className="font-serif text-[48px] font-light leading-none text-white">
-            madoka
-          </h1>
-          <p className="font-serif text-[52px] italic leading-[1.06] text-[#C9A84C]">
-            Restaurant
-          </p>
+        <div className={styles.heroContent}>
+          <div className={styles.heroActions}>
+            <Link href="/new" className={styles.addDish}>＋料理を登録</Link>
+          </div>
+          <div className={styles.heroBottom}>
+            <div>
+              <h1 className={styles.title}>madoka</h1>
+              <p className={styles.subtitle}>Restaurant</p>
+            </div>
+            <label className={styles.changeBackground}>
+              {heroSaving ? "保存中…" : "背景写真を変更"}
+              <input
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                disabled={heroSaving}
+                onChange={(e) => {
+                  void handleHeroChange(e.target.files?.[0]);
+                  e.currentTarget.value = "";
+                }}
+              />
+            </label>
+          </div>
         </div>
-        <label className="absolute bottom-4 right-4 z-10 cursor-pointer bg-black/45 px-3 py-2 text-[10px] tracking-[0.16em] text-white/75 transition hover:bg-black/65 hover:text-white sm:bottom-5 sm:right-5">
-            {heroSaving ? "保存中…" : "背景写真を変更"}
-            <input
-              type="file"
-              accept="image/*"
-              className="sr-only"
-              disabled={heroSaving}
-              onChange={(e) => {
-                void handleHeroChange(e.target.files?.[0]);
-                e.currentTarget.value = "";
-              }}
-            />
-        </label>
       </section>
 
-      <section id="records" className="max-w-2xl mx-auto px-6 py-10 md:py-12">
-        {error && (
-          <p className="mb-4 text-sm text-red-600">{error}</p>
-        )}
-        {listLoading ? (
-          <p className="text-gray-400 text-sm text-center py-10">読み込み中…</p>
-        ) : dishes.length === 0 ? (
-          <p className="text-gray-400 text-sm text-center py-14">
-            最初の一皿を記録してみよう
+      <section id="records" className={styles.records} aria-labelledby="album-heading">
+        <h2 id="album-heading" className={styles.heading}>家族の料理アルバム</h2>
+        <div role="search" aria-label="料理を探す" className={styles.searchControls}>
+          <label htmlFor="dish-search" className="sr-only">料理名・メモ・ジャンルで検索</label>
+          <input
+            id="dish-search"
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="料理名・メモ・ジャンルで検索"
+            className={styles.searchInput}
+          />
+          <div role="group" aria-label="ジャンルで絞り込み" className={styles.genres}>
+            {(["all", ...GENRE_IDS] as const).map((genre) => (
+              <button
+                type="button"
+                key={genre}
+                aria-pressed={selectedGenre === genre}
+                onClick={() => setSelectedGenre(genre)}
+                className={styles.genreButton}
+              >
+                {selectedGenre === genre && <span aria-hidden>✓ </span>}
+                {genre === "all" ? "すべて" : genreLabel(genre)}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className={styles.resultsBar}>
+          <p role="status" aria-live="polite" aria-atomic="true">
+            {listLoading ? "料理を読み込み中…" : error ? "料理を取得できませんでした" : `${filteredDishes.length}皿${hasFilters ? ` ／ 全${dishes.length}皿` : ""}`}
           </p>
+          {hasFilters && <button type="button" onClick={clearFilters} className={styles.clearButton}>条件を解除</button>}
+          <div role="group" aria-label="登録順" className={styles.sortControls}>
+            <span>登録順：</span>
+            {(["newest", "oldest"] as const).map((order) => (
+              <button type="button" key={order} aria-pressed={registrationOrder === order}
+                onClick={() => setRegistrationOrder(order)} className={styles.sortButton}>
+                {order === "newest" ? "新しい順" : "古い順"}
+              </button>
+            ))}
+          </div>
+        </div>
+        {listLoading ? (
+          <div className={styles.loadingGrid} aria-hidden>
+            {[0, 1, 2, 3].map((key) => <div key={key} className={styles.loadingCard} />)}
+          </div>
+        ) : error ? (
+          <div className={styles.emptyState} role="alert">
+            <p>{error}。通信環境を確認して、もう一度お試しください。</p>
+            <button type="button" className={styles.retryButton} onClick={() => {
+              setError(null);
+              setListLoading(true);
+              setListAttempt((attempt) => attempt + 1);
+            }}>もう一度読み込む</button>
+          </div>
+        ) : dishes.length === 0 ? (
+          <div className={styles.emptyState}>
+            <p>まだ料理が登録されていません。</p>
+            <p>「＋料理を登録」から、家族の一皿を残してみませんか。</p>
+          </div>
+        ) : filteredDishes.length === 0 ? (
+          <div className={styles.emptyState}>
+            <p>条件に合う料理が見つかりませんでした。</p>
+            <p>言葉やジャンルを変えるか、「条件を解除」で全ての料理を表示できます。</p>
+          </div>
         ) : (
-          <>
-            <div className="flex items-baseline justify-between mb-5">
-              <h2 className="font-serif text-2xl text-gray-900">最近の記録</h2>
-              <span className="text-[10px] tracking-[0.25em] text-gray-400 uppercase">
-                {filteredDishes.length} 皿
-              </span>
-            </div>
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="料理名・メモで検索"
-              className="w-full mb-6 px-3.5 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-md placeholder:text-gray-400 focus:outline-none focus:border-gray-500 focus:bg-white transition-colors duration-200"
-            />
-            {filteredDishes.length === 0 ? (
-              <p className="text-gray-400 text-sm text-center py-10">
-                該当する記録がありません
-              </p>
-            ) : (
-            <ul className="space-y-2.5">
+            <ul className={styles.grid} aria-label="料理一覧">
               {filteredDishes.map((d) => (
-                <li
-                  key={d.id}
-                  className="border border-gray-100 rounded-lg hover:border-gray-200 hover:shadow-[0_6px_16px_-8px_rgba(0,0,0,0.08)] active:shadow-sm active:translate-y-[0.5px] transition-all duration-200"
-                >
+                <li key={d.id} className={styles.card}>
                   <Link
                     href={`/dish/${d.id}`}
-                    className="flex gap-4 items-start p-4"
+                    className={styles.cardLink}
                   >
+                    <div className={styles.photo}>
                     {IMAGES_ENABLED && d.imagePath ? (
                       <DishImage
                         imagePath={d.imagePath}
                         updatedAt={d.updatedAt?.toDate().getTime()}
                         alt={d.name}
-                        className="w-14 h-14 object-cover rounded-md flex-shrink-0"
+                        className={styles.dishImage}
                       />
                     ) : (
                       <div
-                        aria-hidden
-                        className="w-14 h-14 rounded-md bg-gray-50 flex items-center justify-center flex-shrink-0"
+                        className={styles.noPhoto}
                       >
                         <svg
                           viewBox="0 0 24 24"
@@ -211,63 +236,28 @@ function HomeContent() {
                           strokeWidth="1.5"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className="w-5 h-5 text-gray-300"
+                          className={styles.noPhotoIcon}
+                          aria-hidden
                         >
                           <path d="M3 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V2" />
                           <path d="M7 2v20" />
                           <path d="M21 15V2a5 5 0 0 0-5 5v6a2 2 0 0 0 2 2h3Zm0 0v7" />
                         </svg>
+                        <span>写真なし</span>
                       </div>
                     )}
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-baseline gap-2 mb-1">
-                        <h3 className="text-[17px] font-semibold text-gray-900 truncate leading-snug">
-                          {d.name}
-                        </h3>
-                        {d.isSpecial && (
-                          <span
-                            aria-label="Special"
-                            className="text-[15px] text-[#C9A84C] flex-shrink-0 leading-none"
-                          >
-                            ★
-                          </span>
-                        )}
-                      </div>
-                      {d.note && (
-                        <p className="text-[13px] text-gray-500 truncate mb-1.5 leading-snug">
-                          {d.note}
-                        </p>
+                      {d.isSpecial && (
+                        <span aria-label="Special" className={styles.special}>★</span>
                       )}
-                      <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
-                        <span className="flex-shrink-0">{genreLabel(d.genre)}</span>
-                        <span aria-hidden className="text-gray-200">
-                          ·
-                        </span>
-                        <span className="flex-shrink-0 text-gray-300">
-                          {formatDate(d.cookedAt)}
-                        </span>
-                        {(() => {
-                          const ts = d.updatedAt ?? d.createdAt;
-                          const s = formatDateTimeJst(ts);
-                          return s ? (
-                            <>
-                              <span aria-hidden className="text-gray-200">
-                                ·
-                              </span>
-                              <span className="flex-shrink-0 text-gray-300">
-                                更新 {s}
-                              </span>
-                            </>
-                          ) : null;
-                        })()}
-                      </div>
+                    </div>
+                    <div className={styles.cardText}>
+                      <h3 className={styles.dishName}>{d.name}</h3>
+                      <span className={styles.genreLabel}>{genreLabel(d.genre)}</span>
                     </div>
                   </Link>
                 </li>
               ))}
             </ul>
-            )}
-          </>
         )}
       </section>
     </main>

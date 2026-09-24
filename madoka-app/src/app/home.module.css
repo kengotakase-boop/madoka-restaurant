@@ -1,0 +1,129 @@
+.album {
+  min-height: 100vh;
+  background: #fff;
+  color: #111;
+}
+
+.hero {
+  position: relative;
+  max-width: 70rem;
+  margin-inline: auto;
+  overflow: hidden;
+  background: #111;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  min-height: 12.5rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.heroActions { display: flex; justify-content: flex-end; }
+.heroBottom { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: .5rem; }
+.heroBottom > div { min-width: 0; max-width: 100%; }
+.title, .subtitle { overflow-wrap: anywhere; }
+.title { font: 400 2.5rem/1 Georgia, "Times New Roman", serif; color: #fff; }
+.subtitle { font: italic 400 2.45rem/1.06 Georgia, "Times New Roman", serif; color: #c9a84c; }
+
+.addDish {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: .625rem 1rem;
+  background: #fff;
+  color: #111;
+  border-radius: .375rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+.addDish:hover { background: #f5ecd2; }
+.changeBackground {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: .5rem;
+  background: #111;
+  color: #fff;
+  border-radius: .25rem;
+  font-size: .75rem;
+  cursor: pointer;
+}
+.changeBackground:has(input:disabled) { cursor: wait; }
+
+.records { max-width: 70rem; margin-inline: auto; padding: 1.25rem 1rem 3rem; }
+.heading { font-size: 1.25rem; line-height: 1.5; font-weight: 700; margin-bottom: .875rem; }
+.searchControls { display: grid; gap: .75rem; }
+.searchInput {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: .75rem;
+  border: 1px solid #999;
+  border-radius: .5rem;
+  background: #faf9f6;
+  color: #111;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.searchInput::placeholder { color: #595959; opacity: 1; }
+.genres { display: flex; flex-wrap: wrap; gap: .375rem; }
+.genreButton {
+  min-width: 44px;
+  min-height: 44px;
+  padding: .5rem .75rem;
+  border: 1px solid #aaa;
+  border-radius: 1.5rem;
+  font-size: .875rem;
+  line-height: 1.5;
+  color: #333;
+  background: #fff;
+  cursor: pointer;
+}
+.genreButton:hover { background: #f5f0e4; }
+.genreButton[aria-pressed="true"] { background: #222; border-color: #222; color: #fff; font-weight: 700; }
+.resultsBar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .25rem 1rem; min-height: 3.5rem; font-size: .875rem; color: #444; }
+.sortControls { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem; margin-left: auto; }
+.sortButton { min-height: 44px; padding: .5rem .625rem; border: 1px solid #aaa; border-radius: .375rem; background: #fff; color: #333; font-size: .875rem; cursor: pointer; }
+.sortButton[aria-pressed="true"] { background: #222; border-color: #222; color: #fff; font-weight: 700; }
+.clearButton, .retryButton { min-width: 44px; min-height: 44px; padding: .5rem .75rem; font-size: .875rem; font-weight: 600; cursor: pointer; }
+.clearButton { color: #333; text-decoration: underline; text-underline-offset: .25em; }
+.retryButton { border-radius: .375rem; background: #222; color: #fff; margin-top: 1rem; }
+
+.grid, .loadingGrid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem .75rem; }
+.card { min-width: 0; border: 1px solid #e3dfd6; border-radius: .625rem; background: #fff; }
+.cardLink { display: block; height: 100%; border-radius: inherit; }
+.cardLink:hover .dishName { text-decoration: underline; text-underline-offset: .2em; }
+.photo { position: relative; height: 360px; overflow: hidden; background: #f2f0eb; border-radius: .5625rem .5625rem 0 0; }
+.dishImage { display: block; width: 100%; height: 100%; object-fit: contain; }
+/* Keep image failure text readable here without changing shared detail/edit UI. */
+.photo > span[role="img"] { color: #595959; font-size: .875rem; text-align: center; }
+.noPhoto { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .625rem; color: #666; font-size: .875rem; }
+.noPhotoIcon { width: 2rem; height: 2rem; }
+.special { position: absolute; top: .5rem; right: .5rem; display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%; background: #fff; color: #785c16; font-size: 1.125rem; }
+.cardText { padding: .75rem; }
+.dishName { font-size: 1rem; line-height: 1.5; font-weight: 600; min-height: 3em; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.genreLabel { display: inline-block; max-width: 100%; margin-top: .625rem; padding: .25rem .5rem; border-radius: .25rem; background: #f5f0e4; color: #514321; font-size: .8125rem; line-height: 1.5; overflow-wrap: anywhere; }
+.emptyState { padding: 2rem 1rem; border-radius: .5rem; background: #faf9f6; color: #444; font-size: 1rem; line-height: 1.75; text-align: center; }
+.emptyState p + p { margin-top: .5rem; }
+.loadingCard { height: 360px; border-radius: .625rem; background: #f2f0eb; }
+.album :is(a, button, input):focus-visible, .changeBackground:focus-within { outline: 3px solid #8a6819; outline-offset: 3px; }
+
+@media (min-width: 48rem) {
+  .heroContent { min-height: 16.25rem; padding: 1.5rem 2rem; }
+  .title { font-size: 3rem; }
+  .subtitle { font-size: 3.25rem; }
+  .records { padding: 1.5rem 2rem 4rem; }
+  .heading { font-size: 1.5rem; }
+  .searchInput { max-width: 36rem; }
+  .grid, .loadingGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+}
+@media (min-width: 64rem) {
+  .grid, .loadingGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
